@@ -5,9 +5,9 @@ import SnapKit
 class AuthViewController: UIViewController {
     
     private let viewModel = AuthViewModel()
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Constants
-    
     private enum Constants {
         static let backgroundColor = UIColor(red: 243/255, green: 245/255, blue: 246/255, alpha: 1)
         static let buttonColor = UIColor(red: 25/255, green: 28/255, blue: 50/255, alpha: 1)
@@ -18,24 +18,35 @@ class AuthViewController: UIViewController {
     }
     
     // MARK: - UI Components
-    
     private let logoImageView = UIImageView()
     private let userImageView = UIImageView()
     private let passwordImageView = UIImageView()
     
-    private let usernameField = UITextField()
-    private let passwordField = UITextField()
+    private let usernameTextField = UITextField()
+    private let passwordTextField = UITextField()
     
     private let loginButton = UIButton()
     
     // MARK: - Lyfecycle
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = Constants.backgroundColor
         
+        setupView()
         setupLayout()
         setupUI()
+        bindViewModel()
+        viewModel.loadAuthorizationState()
+    }
+}
+
+// MARK: - Setup View
+private extension AuthViewController {
+    
+    func setupView() {
+        view.backgroundColor = Constants.backgroundColor
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
     }
 }
 
@@ -44,9 +55,8 @@ private extension AuthViewController {
     
     func setupLayout() {
         
-        [logoImageView, usernameField, passwordField, loginButton].forEach {
+        [logoImageView, usernameTextField, passwordTextField, loginButton].forEach {
             view.addSubview($0)
-            $0.translatesAutoresizingMaskIntoConstraints = false
         }
         
         logoImageView.snp.makeConstraints { make in
@@ -55,13 +65,13 @@ private extension AuthViewController {
             make.size.equalTo(Constants.logoSize)
         }
         
-        usernameField.snp.makeConstraints { make in
+        usernameTextField.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(474)
             make.centerX.equalToSuperview()
             make.size.equalTo(Constants.textFieldSize)
         }
         
-        passwordField.snp.makeConstraints { make in
+        passwordTextField.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(544)
             make.centerX.equalToSuperview()
             make.size.equalTo(Constants.textFieldSize)
@@ -73,7 +83,6 @@ private extension AuthViewController {
             make.width.equalTo(325)
             make.height.equalTo(55)
         }
-        
     }
 }
 
@@ -94,15 +103,16 @@ private extension AuthViewController {
         let userImageContainer = UIView(frame: CGRect(x: 0, y: 0, width: 44, height: 44))
         userImageContainer.addSubview(userImageView)
         
-        usernameField.placeholder = "Username"
-        usernameField.autocapitalizationType = .none
-        usernameField.autocorrectionType = .no
-        usernameField.returnKeyType = .next
-        usernameField.backgroundColor = .white
-        usernameField.layer.cornerRadius = Constants.textFieldCornerRadius
-        usernameField.clearButtonMode = .whileEditing
-        usernameField.leftView = userImageContainer
-        usernameField.leftViewMode = .always
+        usernameTextField.placeholder = "Username"
+        usernameTextField.autocapitalizationType = .none
+        usernameTextField.autocorrectionType = .no
+        usernameTextField.returnKeyType = .next
+        usernameTextField.backgroundColor = .white
+        usernameTextField.layer.cornerRadius = Constants.textFieldCornerRadius
+        usernameTextField.clearButtonMode = .whileEditing
+        usernameTextField.leftView = userImageContainer
+        usernameTextField.leftViewMode = .always
+        usernameTextField.delegate = self
         
         // MARK: Password
         let passwordImageView = UIImageView(image: UIImage(named: "password"))
@@ -112,16 +122,17 @@ private extension AuthViewController {
         let passwordImageContainer = UIView(frame: CGRect(x: 0, y: 0, width: 44, height: 44))
         passwordImageContainer.addSubview(passwordImageView)
         
-        passwordField.placeholder = "Password"
-        passwordField.isSecureTextEntry = true
-        passwordField.autocapitalizationType = .none
-        passwordField.autocorrectionType = .no
-        passwordField.returnKeyType = .done
-        passwordField.backgroundColor = .white
-        passwordField.layer.cornerRadius = Constants.textFieldCornerRadius
-        passwordField.clearButtonMode = .whileEditing
-        passwordField.leftView = passwordImageContainer
-        passwordField.leftViewMode = .always
+        passwordTextField.placeholder = "Password"
+        passwordTextField.isSecureTextEntry = true
+        passwordTextField.autocapitalizationType = .none
+        passwordTextField.autocorrectionType = .no
+        passwordTextField.returnKeyType = .done
+        passwordTextField.backgroundColor = .white
+        passwordTextField.layer.cornerRadius = Constants.textFieldCornerRadius
+        passwordTextField.clearButtonMode = .whileEditing
+        passwordTextField.leftView = passwordImageContainer
+        passwordTextField.leftViewMode = .always
+        passwordTextField.delegate = self
         
         // MARK: Login Button
         loginButton.setTitle("Login", for: .normal)
@@ -129,9 +140,129 @@ private extension AuthViewController {
         loginButton.backgroundColor = Constants.buttonColor
         loginButton.layer.cornerRadius = Constants.buttonCornerRadius
     }
-    
 }
 
+// MARK: - ViewModel Binding
+private extension AuthViewController {
+    
+    func bindViewModel() {
+        
+        usernameTextField.addTarget(self, action: #selector(usernameTextChanged), for: .editingChanged)
+        passwordTextField.addTarget(self, action: #selector(passwordTextChanged), for: .editingChanged)
+        loginButton.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
+        
+        viewModel.$errorMessage
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] error in
+                guard let error = error else { return }
+                self?.showAlert(message: error)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$isAuthorized
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isAuth in
+                if isAuth {
+                    self?.showCoinList()
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    func showCoinList() {
+        let vc = CoinListViewController()
+        let nav = UINavigationController(rootViewController: vc)
+        nav.modalPresentationStyle = .fullScreen
+        
+        guard
+            let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+            let window = windowScene.windows.first
+        else {
+            return
+        }
+        
+        window.rootViewController = nav
+        window.makeKeyAndVisible()
+    }
+}
+
+// MARK: - Alert Handling
+extension AuthViewController {
+    
+    func alertConfiguration(message: String) -> UIAlertController {
+        let alert = UIAlertController(title: "Ошибка", message: message, preferredStyle: .alert)
+        
+        let repeatAction = UIAlertAction(title: "Повторить", style: .default)
+        let cancelAction = UIAlertAction(title: "Отменить", style: .destructive) { [weak self] _ in
+            self?.clearFields()
+        }
+        
+        alert.addAction(repeatAction)
+        alert.addAction(cancelAction)
+        
+        return alert
+    }
+    
+    func clearFields() {
+        usernameTextField.text = ""
+        passwordTextField.text = ""
+        viewModel.username = ""
+        viewModel.password = ""
+    }
+    
+    func showAlert(message: String) {
+        present(alertConfiguration(message: message), animated: true)
+    }
+}
+
+// MARK: - Actions
+extension AuthViewController {
+    
+    @objc func usernameTextChanged() {
+        viewModel.username = usernameTextField.text ?? ""
+    }
+    
+    @objc func passwordTextChanged() {
+        viewModel.password = passwordTextField.text ?? ""
+    }
+    
+    @objc func loginButtonTapped() {
+        view.endEditing(true)
+        
+        guard let username = usernameTextField.text, !username.isEmpty else {
+            showAlert(message: "Пожалуйста, введите логин")
+            return
+        }
+        
+        guard let password = passwordTextField.text, !password.isEmpty else {
+            showAlert(message: "Пожалуйста, введите пароль")
+            return
+        }
+        
+        viewModel.loginUser()
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
+}
+
+// MARK: - UITextFieldDelegate
+extension AuthViewController: UITextFieldDelegate {
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        
+        if textField == usernameTextField {
+            passwordTextField.becomeFirstResponder()
+        } else if textField == passwordTextField {
+            passwordTextField.resignFirstResponder()
+            loginButtonTapped()
+        }
+        return true
+    }
+}
+
+// MARK: - Preview
 #Preview(traits: .portrait) {
     AuthViewController()
 }
