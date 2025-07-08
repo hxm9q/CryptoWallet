@@ -166,14 +166,14 @@ private extension AuthViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isAuth in
                 if isAuth {
-                    self?.showCoinList()
+                    self?.showCoinListTabBar()
                 }
             }
             .store(in: &cancellables)
     }
     
-    func showCoinList() {
-        let vc = CoinListViewController()
+    func showCoinListTabBar() {
+        let vc = CoinListTabBarController()
         let nav = UINavigationController(rootViewController: vc)
         nav.modalPresentationStyle = .fullScreen
         
