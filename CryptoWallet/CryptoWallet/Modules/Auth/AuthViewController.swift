@@ -47,6 +47,9 @@ private extension AuthViewController {
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
+        
+        usernameTextField.delegate = self
+        passwordTextField.delegate = self
     }
 }
 
@@ -54,10 +57,13 @@ private extension AuthViewController {
 private extension AuthViewController {
     
     func setupLayout() {
-        
         [logoImageView, usernameTextField, passwordTextField, loginButton].forEach {
             view.addSubview($0)
         }
+        
+        let screenHeight = UIScreen.main.bounds.height
+        let usernameTopOffset: CGFloat = screenHeight < 668 ? 85 : 174
+        let loginButtonBottomOffset: CGFloat = screenHeight < 668 ? 59 : 133
         
         logoImageView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(13)
@@ -66,22 +72,23 @@ private extension AuthViewController {
         }
         
         usernameTextField.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(474)
+            make.top.equalTo(logoImageView.snp.bottom).offset(usernameTopOffset)
             make.centerX.equalToSuperview()
             make.size.equalTo(Constants.textFieldSize)
         }
         
         passwordTextField.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(544)
+            make.top.equalTo(usernameTextField.snp.bottom).offset(15)
             make.centerX.equalToSuperview()
             make.size.equalTo(Constants.textFieldSize)
         }
         
         loginButton.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(624)
+            make.top.equalTo(passwordTextField.snp.bottom).offset(25)
             make.centerX.equalToSuperview()
-            make.width.equalTo(325)
-            make.height.equalTo(55)
+            make.width.equalTo(Constants.textFieldSize.width)
+            make.height.equalTo(Constants.textFieldSize.height)
+            make.bottom.equalToSuperview().offset(-loginButtonBottomOffset)
         }
     }
 }
@@ -90,7 +97,6 @@ private extension AuthViewController {
 private extension AuthViewController {
     
     func setupUI() {
-        
         // MARK: Logo
         logoImageView.image = UIImage(named: "Group 79logo")
         logoImageView.contentMode = .scaleAspectFill
@@ -112,7 +118,6 @@ private extension AuthViewController {
         usernameTextField.clearButtonMode = .whileEditing
         usernameTextField.leftView = userImageContainer
         usernameTextField.leftViewMode = .always
-        usernameTextField.delegate = self
         
         // MARK: Password
         let passwordImageView = UIImageView(image: UIImage(named: "password"))
@@ -132,7 +137,6 @@ private extension AuthViewController {
         passwordTextField.clearButtonMode = .whileEditing
         passwordTextField.leftView = passwordImageContainer
         passwordTextField.leftViewMode = .always
-        passwordTextField.delegate = self
         
         // MARK: Login Button
         loginButton.setTitle("Login", for: .normal)
@@ -146,7 +150,6 @@ private extension AuthViewController {
 private extension AuthViewController {
     
     func bindViewModel() {
-        
         usernameTextField.addTarget(self, action: #selector(usernameTextChanged), for: .editingChanged)
         passwordTextField.addTarget(self, action: #selector(passwordTextChanged), for: .editingChanged)
         loginButton.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
@@ -251,7 +254,6 @@ extension AuthViewController {
 extension AuthViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        
         if textField == usernameTextField {
             passwordTextField.becomeFirstResponder()
         } else if textField == passwordTextField {
@@ -263,6 +265,6 @@ extension AuthViewController: UITextFieldDelegate {
 }
 
 // MARK: - Preview
-#Preview(traits: .portrait) {
+#Preview {
     AuthViewController()
 }
