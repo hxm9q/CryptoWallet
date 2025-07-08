@@ -29,10 +29,16 @@ class AuthViewModel {
         UserDefaults.standard.set(false, forKey: "isAuthorized")
         username = ""
         password = ""
+        
+        NotificationCenter.default.post(name: .didLogout, object: nil)
     }
     
     func loadAuthorizationState() {
         let saved = UserDefaults.standard.bool(forKey: "isAuthorized")
         isAuthorized = saved
     }
+}
+
+extension Notification.Name {
+    static let didLogout = Notification.Name("didLogout")
 }

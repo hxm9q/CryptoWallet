@@ -8,7 +8,7 @@ class AuthViewController: UIViewController {
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Constants
-    private enum Constants {
+    private enum AuthConstants {
         static let backgroundColor = UIColor(red: 243/255, green: 245/255, blue: 246/255, alpha: 1)
         static let buttonColor = UIColor(red: 25/255, green: 28/255, blue: 50/255, alpha: 1)
         static let logoSize: CGFloat = 287
@@ -27,13 +27,13 @@ class AuthViewController: UIViewController {
     
     private let loginButton = UIButton()
     
-    // MARK: - Lyfecycle
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupView()
-        setupLayout()
         setupUI()
+        setupLayout()
         bindViewModel()
         viewModel.loadAuthorizationState()
     }
@@ -43,7 +43,7 @@ class AuthViewController: UIViewController {
 private extension AuthViewController {
     
     func setupView() {
-        view.backgroundColor = Constants.backgroundColor
+        view.backgroundColor = AuthConstants.backgroundColor
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
@@ -53,52 +53,12 @@ private extension AuthViewController {
     }
 }
 
-// MARK: - Setup Layout
-private extension AuthViewController {
-    
-    func setupLayout() {
-        [logoImageView, usernameTextField, passwordTextField, loginButton].forEach {
-            view.addSubview($0)
-        }
-        
-        let screenHeight = UIScreen.main.bounds.height
-        let usernameTopOffset: CGFloat = screenHeight < 668 ? 85 : 174
-        let loginButtonBottomOffset: CGFloat = screenHeight < 668 ? 59 : 133
-        
-        logoImageView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(13)
-            make.centerX.equalToSuperview()
-            make.size.equalTo(Constants.logoSize)
-        }
-        
-        usernameTextField.snp.makeConstraints { make in
-            make.top.equalTo(logoImageView.snp.bottom).offset(usernameTopOffset)
-            make.centerX.equalToSuperview()
-            make.size.equalTo(Constants.textFieldSize)
-        }
-        
-        passwordTextField.snp.makeConstraints { make in
-            make.top.equalTo(usernameTextField.snp.bottom).offset(15)
-            make.centerX.equalToSuperview()
-            make.size.equalTo(Constants.textFieldSize)
-        }
-        
-        loginButton.snp.makeConstraints { make in
-            make.top.equalTo(passwordTextField.snp.bottom).offset(25)
-            make.centerX.equalToSuperview()
-            make.width.equalTo(Constants.textFieldSize.width)
-            make.height.equalTo(Constants.textFieldSize.height)
-            make.bottom.equalToSuperview().offset(-loginButtonBottomOffset)
-        }
-    }
-}
-
 // MARK: - Setup UI
 private extension AuthViewController {
     
     func setupUI() {
         // MARK: Logo
-        logoImageView.image = UIImage(named: "Group 79logo")
+        logoImageView.image = UIImage(named: "auth_logo")
         logoImageView.contentMode = .scaleAspectFill
         
         // MARK: Username
@@ -114,7 +74,7 @@ private extension AuthViewController {
         usernameTextField.autocorrectionType = .no
         usernameTextField.returnKeyType = .next
         usernameTextField.backgroundColor = .white
-        usernameTextField.layer.cornerRadius = Constants.textFieldCornerRadius
+        usernameTextField.layer.cornerRadius = AuthConstants.textFieldCornerRadius
         usernameTextField.clearButtonMode = .whileEditing
         usernameTextField.leftView = userImageContainer
         usernameTextField.leftViewMode = .always
@@ -133,7 +93,7 @@ private extension AuthViewController {
         passwordTextField.autocorrectionType = .no
         passwordTextField.returnKeyType = .done
         passwordTextField.backgroundColor = .white
-        passwordTextField.layer.cornerRadius = Constants.textFieldCornerRadius
+        passwordTextField.layer.cornerRadius = AuthConstants.textFieldCornerRadius
         passwordTextField.clearButtonMode = .whileEditing
         passwordTextField.leftView = passwordImageContainer
         passwordTextField.leftViewMode = .always
@@ -141,8 +101,48 @@ private extension AuthViewController {
         // MARK: Login Button
         loginButton.setTitle("Login", for: .normal)
         loginButton.setTitleColor(.white, for: .normal)
-        loginButton.backgroundColor = Constants.buttonColor
-        loginButton.layer.cornerRadius = Constants.buttonCornerRadius
+        loginButton.backgroundColor = AuthConstants.buttonColor
+        loginButton.layer.cornerRadius = AuthConstants.buttonCornerRadius
+    }
+}
+
+// MARK: - Setup Layout
+private extension AuthViewController {
+    
+    func setupLayout() {
+        [logoImageView, usernameTextField, passwordTextField, loginButton].forEach {
+            view.addSubview($0)
+        }
+        
+        let screenHeight = UIScreen.main.bounds.height
+        let usernameTopOffset: CGFloat = screenHeight < 668 ? 85 : 174
+        let loginButtonBottomOffset: CGFloat = screenHeight < 668 ? 59 : 133
+        
+        logoImageView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(13)
+            make.centerX.equalToSuperview()
+            make.size.equalTo(AuthConstants.logoSize)
+        }
+        
+        usernameTextField.snp.makeConstraints { make in
+            make.top.equalTo(logoImageView.snp.bottom).offset(usernameTopOffset)
+            make.centerX.equalToSuperview()
+            make.size.equalTo(AuthConstants.textFieldSize)
+        }
+        
+        passwordTextField.snp.makeConstraints { make in
+            make.top.equalTo(usernameTextField.snp.bottom).offset(15)
+            make.centerX.equalToSuperview()
+            make.size.equalTo(AuthConstants.textFieldSize)
+        }
+        
+        loginButton.snp.makeConstraints { make in
+            make.top.equalTo(passwordTextField.snp.bottom).offset(25)
+            make.centerX.equalToSuperview()
+            make.width.equalTo(AuthConstants.textFieldSize.width)
+            make.height.equalTo(AuthConstants.textFieldSize.height)
+            make.bottom.equalToSuperview().offset(-loginButtonBottomOffset)
+        }
     }
 }
 
