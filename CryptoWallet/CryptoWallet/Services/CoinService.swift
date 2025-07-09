@@ -6,6 +6,7 @@ class CoinService {
     private init() {}
     
     private let urlString = "https://data.messari.io/api/v1/assets"
+    private let coinsToFetch = ["btc", "eth", "tron", "luna", "polkadot", "dogecoin", "tether", "stellar", "cardano", "xrp"]
     
     func fetchCoins(completion: @escaping ([Coin]?, Error?) -> Void) {
         
