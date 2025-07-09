@@ -142,7 +142,7 @@ private extension CoinListViewController {
         }
         
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(258)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(230)
             make.centerX.equalToSuperview()
             make.width.equalTo(view.bounds.width)
             make.height.equalTo(554)
@@ -176,7 +176,7 @@ private extension CoinListViewController {
         }
         
         homeImageView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(90)
+            make.top.equalTo(refreshLogoutButton.snp.bottom).offset(46)
             make.leading.equalTo(view.snp.leading).offset(165)
             make.width.height.equalTo(CoinListConstants.homeImageViewSize)
         }
@@ -400,6 +400,13 @@ extension CoinListViewController: UITableViewDataSource, UITableViewDelegate {
         }
         cell.configure(with: coins[indexPath.row])
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let selectedCoin = coins[indexPath.row]
+        let coinDetailVC = CoinDetailViewController(coin: selectedCoin)
+        navigationController?.pushViewController(coinDetailVC, animated: true)
     }
 }
 

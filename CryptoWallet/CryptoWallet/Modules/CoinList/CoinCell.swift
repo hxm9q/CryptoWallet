@@ -114,7 +114,7 @@ class CoinCell: UITableViewCell {
     func configure(with coin: Coin) {
         nameLabel.text = "\(coin.name)"
         tickerLabel.text = "\(coin.symbol)"
-        priceLabel.text = coin.price
+        priceLabel.text = "$" + coin.price
         changeLabel.text = coin.change
         
         let arrowImageName = coin.isPositiveChange ? "arrow up" : "arrow down"
