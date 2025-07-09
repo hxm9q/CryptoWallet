@@ -113,7 +113,7 @@ class CoinCell: UITableViewCell {
     
     func configure(with coin: Coin) {
         nameLabel.text = "\(coin.name)"
-        tickerLabel.text = "\(coin.ticker)"
+        tickerLabel.text = "\(coin.symbol)"
         priceLabel.text = coin.price
         changeLabel.text = coin.change
         

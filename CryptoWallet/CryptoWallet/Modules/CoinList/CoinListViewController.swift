@@ -3,33 +3,7 @@ import SnapKit
 
 class CoinListViewController: UIViewController {
     
-    private let testCoins = [
-        Coin(
-            name: "Bitcoin",
-            ticker: "BTC",
-            image: UIImage(named: "bitcoin"),
-            price: "32128.80",
-            change: "2.5%",
-            isPositiveChange: true
-        ),
-        Coin(
-            name: "Neo",
-            ticker: "NEO",
-            image: UIImage(named: "bitcoin"),
-            price: "13221.55",
-            change: "2.2%",
-            isPositiveChange: true
-        ),
-        Coin(
-            name: "Ahcain",
-            ticker: "ACT",
-            image: UIImage(named: "bitcoin"),
-            price: "28312.22",
-            change: "2.2%",
-            isPositiveChange: false
-        )
-    ]
-    
+    private var coins: [Coin] = []
     private let authViewModel = AuthViewModel()
     
     // MARK: - CoinList Constants
@@ -39,7 +13,6 @@ class CoinListViewController: UIViewController {
         static let learnMoreButtonBackgroundColor = UIColor(red: 250/255, green: 251/255, blue: 251/255, alpha: 1)
         static let homeImageViewShadowColor = UIColor(red: 231/255, green: 68/255, blue: 109/255, alpha: 1).cgColor
         static let homeImageViewSize: CGFloat = 242
-        
     }
     
     // MARK: - UI Components
@@ -49,6 +22,8 @@ class CoinListViewController: UIViewController {
     private let refreshLogoutButton = UIButton()
     private let learnMoreButton = UIButton()
     private let homeImageView = UIImageView()
+    private let activityIndicator = UIActivityIndicatorView()
+    private let footerView = UIView()
     
     private var refreshLogoutMenu: UIView?
     private var sortMenu: UIView?
@@ -60,7 +35,39 @@ class CoinListViewController: UIViewController {
         
         setupUI()
         setupLayout()
-        setupTableHeaderView()
+        setupTableView()
+        loadCoins()
+    }
+    
+    private func loadCoins() {
+        activityIndicator.startAnimating()
+        coins = []
+        tableView.reloadData()
+        
+        CoinService.shared.fetchCoins { [weak self] coins, error in
+            DispatchQueue.main.async {
+                self?.activityIndicator.stopAnimating()
+                
+                if let error = error {
+                    self?.showErrorAlert(message: error.localizedDescription)
+                    self?.coins = []
+                } else if let coins = coins {
+                    self?.coins = coins
+                }
+                self?.tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: self?.view.frame.width ?? 0, height: 0))
+                self?.tableView.reloadData()
+            }
+        }
+    }
+    
+    private func showErrorAlert(message: String) {
+        let alert = UIAlertController(
+            title: "Ошибка",
+            message: "Не удалось загрузить данные: \(message)",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 }
 
@@ -114,6 +121,15 @@ private extension CoinListViewController {
         homeImageView.layer.shadowRadius = 20
         homeImageView.clipsToBounds = true
         homeImageView.layer.masksToBounds = true
+        
+        // MARK: Activity Indicator
+        activityIndicator.style = .medium
+        activityIndicator.color = .gray
+        activityIndicator.hidesWhenStopped = true
+        
+        // MARK: Footer View
+        footerView.frame = CGRect(x: 0, y: 0, width: tableView.frame.width, height: 30)
+        footerView.addSubview(activityIndicator)
     }
 }
 
@@ -164,13 +180,18 @@ private extension CoinListViewController {
             make.leading.equalTo(view.snp.leading).offset(165)
             make.width.height.equalTo(CoinListConstants.homeImageViewSize)
         }
+        
+        activityIndicator.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview().offset(120)
+        }
     }
 }
 
-// MARK: - Setup Table Header View
+// MARK: - Setup Table Header & Footer View
 private extension CoinListViewController {
     
-    func setupTableHeaderView() {
+    func setupTableView() {
         let tableHeaderView = UIView()
         tableHeaderView.frame = CGRect(x: 0, y: 0, width: tableView.frame.width, height: 60)
         
@@ -201,6 +222,7 @@ private extension CoinListViewController {
         }
         
         tableView.tableHeaderView = tableHeaderView
+        tableView.tableFooterView = footerView
     }
 }
 
@@ -265,7 +287,10 @@ private extension CoinListViewController {
     }
     
     @objc func refreshButtonTapped() {
-        // после подключения апи доделать
+        tableView.tableFooterView = footerView
+        activityIndicator.startAnimating()
+        
+        loadCoins()
         refreshLogoutMenu?.removeFromSuperview()
         refreshLogoutMenu = nil
     }
@@ -332,11 +357,31 @@ private extension CoinListViewController {
     }
     
     @objc func ascendingButtonTapped() {
-        // сортировка по возрастанию
+        UIView.transition(
+            with: tableView,
+            duration: 0.3,
+            options: .transitionCrossDissolve,
+            animations: {
+                self.coins.sort { $0.priceValue < $1.priceValue }
+                self.tableView.reloadData()
+            }
+        )
+        sortMenu?.removeFromSuperview()
+        sortMenu = nil
     }
     
     @objc func descendingButtonTapped() {
-        // сортировка по убыванию
+        UIView.transition(
+            with: tableView,
+            duration: 0.3,
+            options: .transitionCrossDissolve,
+            animations: {
+                self.coins.sort { $0.priceValue > $1.priceValue }
+                self.tableView.reloadData()
+            }
+        )
+        sortMenu?.removeFromSuperview()
+        sortMenu = nil
     }
 }
 
@@ -344,7 +389,7 @@ private extension CoinListViewController {
 extension CoinListViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return testCoins.count
+        return coins.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -353,7 +398,7 @@ extension CoinListViewController: UITableViewDataSource, UITableViewDelegate {
         else {
             return UITableViewCell()
         }
-        cell.configure(with: testCoins[indexPath.row])
+        cell.configure(with: coins[indexPath.row])
         return cell
     }
 }
