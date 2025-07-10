@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-class AuthViewModel {
+final class AuthViewModel {
     
     @Published var username: String = ""
     @Published var password: String = ""
@@ -12,7 +12,6 @@ class AuthViewModel {
     private var cancellables = Set<AnyCancellable>()
     
     func loginUser() {
-        
         if username == "1234" && password == "1234" {
             isAuthorized = true
             errorMessage = nil

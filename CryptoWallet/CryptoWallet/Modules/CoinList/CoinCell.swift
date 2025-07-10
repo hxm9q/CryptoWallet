@@ -2,14 +2,14 @@ import UIKit
 
 class CoinCell: UITableViewCell {
     
-    // MARK: Identifier
+    // MARK: - Identifier
     static let identifier = "CoinCell"
     
-    // MARK: UI Components
+    // MARK: - UI Components
     private let coinImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "bitcoin")
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 25
         imageView.layer.masksToBounds = true
@@ -54,7 +54,7 @@ class CoinCell: UITableViewCell {
     private let rightStackView = UIStackView()
     private let changeStackView = UIStackView()
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .clear
@@ -66,7 +66,7 @@ class CoinCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: Methods
+    // MARK: - Methods
     private func setupLayout() {
         [coinImageView, leftStackView, rightStackView].forEach {
             contentView.addSubview($0)

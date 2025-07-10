@@ -3,8 +3,9 @@ import SnapKit
 
 class CoinListViewController: UIViewController {
     
-    private var coins: [Coin] = []
+    // MARK: - ViewModels
     private let authViewModel = AuthViewModel()
+    private let coinListViewModel = CoinListViewModel()
     
     // MARK: - CoinList Constants
     private enum CoinListConstants {
@@ -24,7 +25,6 @@ class CoinListViewController: UIViewController {
     private let homeImageView = UIImageView()
     private let activityIndicator = UIActivityIndicatorView()
     private let footerView = UIView()
-    
     private var refreshLogoutMenu: UIView?
     private var sortMenu: UIView?
     
@@ -36,38 +36,8 @@ class CoinListViewController: UIViewController {
         setupUI()
         setupLayout()
         setupTableView()
-        loadCoins()
-    }
-    
-    private func loadCoins() {
-        activityIndicator.startAnimating()
-        coins = []
-        tableView.reloadData()
-        
-        CoinService.shared.fetchCoins { [weak self] coins, error in
-            DispatchQueue.main.async {
-                self?.activityIndicator.stopAnimating()
-                
-                if let error = error {
-                    self?.showErrorAlert(message: error.localizedDescription)
-                    self?.coins = []
-                } else if let coins = coins {
-                    self?.coins = coins
-                }
-                self?.tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: self?.view.frame.width ?? 0, height: 0))
-                self?.tableView.reloadData()
-            }
-        }
-    }
-    
-    private func showErrorAlert(message: String) {
-        let alert = UIAlertController(
-            title: "Ошибка",
-            message: "Не удалось загрузить данные: \(message)",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
+        bindViewModel()
+        coinListViewModel.fetchCoins()
     }
 }
 
@@ -86,17 +56,16 @@ private extension CoinListViewController {
         tableView.clipsToBounds = true
         tableView.backgroundColor = CoinListConstants.tableViewBackgroundColor
         
-        // MARK: Home Label
+        // MARK: Labels
         homeLabel.text = "Home"
         homeLabel.font = .systemFont(ofSize: 32, weight: .bold)
         homeLabel.textColor = .white
         
-        // MARK: Affiliate Label
         affiliateLabel.text = "Affiliate program"
         affiliateLabel.font = .systemFont(ofSize: 20, weight: .semibold)
         affiliateLabel.textColor = .white
         
-        // MARK: Refresh & Logout Button
+        // MARK: Buttons
         refreshLogoutButton.setImage(UIImage(named: "threedots"), for: .normal)
         refreshLogoutButton.imageView?.contentMode = .scaleToFill
         refreshLogoutButton.layer.cornerRadius = 25
@@ -104,7 +73,6 @@ private extension CoinListViewController {
         refreshLogoutButton.backgroundColor = .white.withAlphaComponent(0.8)
         refreshLogoutButton.addTarget(self, action: #selector(refreshLogoutButtonTapped), for: .touchUpInside)
         
-        // MARK: Learn More Button
         learnMoreButton.setTitle("Learn More", for: .normal)
         learnMoreButton.setTitleColor(.black, for: .normal)
         learnMoreButton.titleLabel?.font = .systemFont(ofSize: 14, weight: .regular)
@@ -227,6 +195,35 @@ private extension CoinListViewController {
     }
 }
 
+// MARK: - ViewModel Binding
+private extension CoinListViewController {
+    
+    func bindViewModel() {
+        activityIndicator.startAnimating()
+        tableView.reloadData()
+        
+        coinListViewModel.onUpdate = { [weak self] in
+            self?.activityIndicator.stopAnimating()
+            self?.tableView.reloadData()
+        }
+        
+        coinListViewModel.onError = { [weak self] message in
+            self?.activityIndicator.stopAnimating()
+            self?.showErrorAlert(message: message)
+        }
+    }
+    
+    func showErrorAlert(message: String) {
+        let alert = UIAlertController(
+            title: "Ошибка",
+            message: "Не удалось загрузить данные: \(message)",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+}
+
 // MARK: - Refresh & Logout Pop Up Menu
 private extension CoinListViewController {
     
@@ -289,9 +286,12 @@ private extension CoinListViewController {
     
     @objc func refreshButtonTapped() {
         tableView.tableFooterView = footerView
-        activityIndicator.startAnimating()
         
-        loadCoins()
+        coinListViewModel.clearCoins()
+        tableView.reloadData()
+        activityIndicator.startAnimating()
+        coinListViewModel.fetchCoins()
+        
         refreshLogoutMenu?.removeFromSuperview()
         refreshLogoutMenu = nil
     }
@@ -363,7 +363,7 @@ private extension CoinListViewController {
             duration: 0.3,
             options: .transitionCrossDissolve,
             animations: {
-                self.coins.sort { $0.priceValue < $1.priceValue }
+                self.coinListViewModel.sortAscendingByPrice()
                 self.tableView.reloadData()
             }
         )
@@ -377,7 +377,7 @@ private extension CoinListViewController {
             duration: 0.3,
             options: .transitionCrossDissolve,
             animations: {
-                self.coins.sort { $0.priceValue > $1.priceValue }
+                self.coinListViewModel.sortDescendingByPrice()
                 self.tableView.reloadData()
             }
         )
@@ -390,22 +390,23 @@ private extension CoinListViewController {
 extension CoinListViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return coins.count
+        return coinListViewModel.numberOfCoins()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard
-            let cell = tableView.dequeueReusableCell(withIdentifier: "CoinCell", for: indexPath) as? CoinCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "CoinCell", for: indexPath) as? CoinCell,
+            let coin = coinListViewModel.coin(at: indexPath.row)
         else {
             return UITableViewCell()
         }
-        cell.configure(with: coins[indexPath.row])
+        cell.configure(with: coin)
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let selectedCoin = coins[indexPath.row]
+        guard let selectedCoin = coinListViewModel.coin(at: indexPath.row) else { return }
         let coinDetailVC = CoinDetailViewController(coin: selectedCoin)
         navigationController?.pushViewController(coinDetailVC, animated: true)
     }

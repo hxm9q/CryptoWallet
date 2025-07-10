@@ -42,7 +42,6 @@ class CoinDetailCell: UITableViewCell {
     }()
     
     // MARK: - Lifecycle
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .clear
@@ -112,8 +111,4 @@ class CoinDetailCell: UITableViewCell {
             supplyAmountLabel.text = "nil"
         }
     }
-}
-
-#Preview {
-    UINavigationController(rootViewController: CoinDetailViewController(coin: CoinDetailViewController.testCoin[0]))
 }

@@ -11,10 +11,16 @@ class AuthViewController: UIViewController {
     private enum AuthConstants {
         static let backgroundColor = UIColor(red: 243/255, green: 245/255, blue: 246/255, alpha: 1)
         static let buttonColor = UIColor(red: 25/255, green: 28/255, blue: 50/255, alpha: 1)
+        
         static let logoSize: CGFloat = 287
         static let textFieldSize = CGSize(width: 325, height: 55)
+        
         static let textFieldCornerRadius: CGFloat = 25
         static let buttonCornerRadius: CGFloat = 28
+        
+        static let screenHeight = UIScreen.main.bounds.height
+        static let usernameTopOffset: CGFloat = screenHeight < 668 ? 85 : 174
+        static let loginButtonBottomOffset: CGFloat = screenHeight < 668 ? 59 : 133
     }
     
     // MARK: - UI Components
@@ -63,11 +69,11 @@ private extension AuthViewController {
 private extension AuthViewController {
     
     func setupUI() {
-        // MARK: Logo
+        // MARK: LogoImageView
         logoImageView.image = UIImage(named: "auth_logo")
         logoImageView.contentMode = .scaleAspectFill
         
-        // MARK: Username
+        // MARK: UsernameTextField
         let userImageView = UIImageView(image: UIImage(named: "user"))
         userImageView.contentMode = .scaleAspectFit
         userImageView.frame = CGRect(x: 6, y: 6, width: 32, height: 32)
@@ -85,7 +91,7 @@ private extension AuthViewController {
         usernameTextField.leftView = userImageContainer
         usernameTextField.leftViewMode = .always
         
-        // MARK: Password
+        // MARK: PasswordTextField
         let passwordImageView = UIImageView(image: UIImage(named: "password"))
         passwordImageView.contentMode = .scaleAspectFit
         passwordImageView.frame = CGRect(x: 6, y: 6, width: 32, height: 32)
@@ -119,10 +125,9 @@ private extension AuthViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         
-        contentView.addSubview(logoImageView)
-        contentView.addSubview(usernameTextField)
-        contentView.addSubview(passwordTextField)
-        contentView.addSubview(loginButton)
+        [logoImageView, usernameTextField, passwordTextField, loginButton].forEach {
+            contentView.addSubview($0)
+        }
         
         scrollView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -133,10 +138,6 @@ private extension AuthViewController {
             make.width.equalToSuperview()
         }
         
-        let screenHeight = UIScreen.main.bounds.height
-        let usernameTopOffset: CGFloat = screenHeight < 668 ? 85 : 174
-        let loginButtonBottomOffset: CGFloat = screenHeight < 668 ? 59 : 133
-        
         logoImageView.snp.makeConstraints { make in
             make.top.equalTo(contentView.safeAreaLayoutGuide).offset(13)
             make.centerX.equalToSuperview()
@@ -144,7 +145,7 @@ private extension AuthViewController {
         }
         
         usernameTextField.snp.makeConstraints { make in
-            make.top.equalTo(logoImageView.snp.bottom).offset(usernameTopOffset)
+            make.top.equalTo(logoImageView.snp.bottom).offset(AuthConstants.usernameTopOffset)
             make.centerX.equalToSuperview()
             make.size.equalTo(AuthConstants.textFieldSize)
         }
@@ -160,7 +161,7 @@ private extension AuthViewController {
             make.centerX.equalToSuperview()
             make.width.equalTo(AuthConstants.textFieldSize.width)
             make.height.equalTo(AuthConstants.textFieldSize.height)
-            make.bottom.equalTo(contentView).offset(-loginButtonBottomOffset)
+            make.bottom.equalTo(contentView).offset(-AuthConstants.loginButtonBottomOffset)
         }
     }
 }
@@ -199,9 +200,7 @@ private extension AuthViewController {
         guard
             let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
             let window = windowScene.windows.first
-        else {
-            return
-        }
+        else { return }
         
         window.rootViewController = nav
         window.makeKeyAndVisible()
@@ -280,7 +279,7 @@ extension AuthViewController {
         scrollView.contentInset.bottom = keyboardHeight
         scrollView.verticalScrollIndicatorInsets.bottom = keyboardHeight
     }
-
+    
     @objc func keyboardWillHide(_ notification: Notification) {
         scrollView.contentInset.bottom = 0
         scrollView.verticalScrollIndicatorInsets.bottom = 0

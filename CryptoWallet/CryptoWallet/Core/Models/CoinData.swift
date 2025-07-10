@@ -1,15 +1,18 @@
 import Foundation
 
+// MARK: - CoinData
 struct CoinData: Codable {
     let data: [CoinInfo]
 }
 
+// MARK: - CoinInfo
 struct CoinInfo: Codable {
     let name: String
     let symbol: String
     let metrics: Metrics
 }
 
+// MARK: - Metrics
 struct Metrics: Codable {
     let marketData: MarketData
     let marketcap: Marketcap
@@ -22,6 +25,7 @@ struct Metrics: Codable {
     }
 }
 
+// MARK: - MarketData
 struct MarketData: Codable {
     let priceUsd: Double
     let percentChangeUsdLast24Hours: Double
@@ -32,11 +36,12 @@ struct MarketData: Codable {
     }
 }
 
+// MARK: - Marketcap
 struct Marketcap: Codable {
     let rank: Int
     let marketcapDominancePercent: Double
     let currentMarketcapUsd: Double
-
+    
     enum CodingKeys: String, CodingKey {
         case rank
         case marketcapDominancePercent = "marketcap_dominance_percent"
@@ -44,6 +49,7 @@ struct Marketcap: Codable {
     }
 }
 
+// MARK: - SupplyActivity
 struct SupplyActivity: Codable {
     let supplyActive1D: Double?
     let supplyActive7D: Double?

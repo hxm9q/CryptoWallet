@@ -42,7 +42,7 @@ class CoinService {
                     let lowercasedSymbol = coinInfo.symbol.lowercased()
                     return self.coinsToFetch.contains(lowercasedName) || self.coinsToFetch.contains(lowercasedSymbol)
                 }
-
+                
                 let coins = filteredData.map { coinInfo in
                     Coin(
                         name: coinInfo.name,
@@ -56,7 +56,6 @@ class CoinService {
                         supplyEver: coinInfo.metrics.supplyActivity.supplyActiveEver
                     )
                 }
-                
                 completion(coins, nil)
             } catch {
                 completion(nil, error)

@@ -3,10 +3,11 @@ import SnapKit
 
 class CoinDetailViewController: UIViewController {
     
+    // MARK: - Test Coin Instance For Testing in Preview
     static let testCoin = [
         Coin(
-            name: "Etherium",
-            symbol: "ETH",
+            name: "Bitcoin",
+            symbol: "BTC",
             price: 32128.80,
             change: 2.5,
             marketcap: 231233,
@@ -17,9 +18,15 @@ class CoinDetailViewController: UIViewController {
         )
     ]
     
-    private let coin: Coin
-    private let timeFilterSections = ["24H", "1W", "1Y", "ALL", "Point"]
-    private var selectedSupplyValue: Double?
+    // MARK: - ViewModel
+    private let coinDetailViewModel: CoinDetailViewModel
+    
+    // MARK: - Constants
+    private enum CoinDetailConstants {
+        static let backgroundColor = UIColor(red: 243/255, green: 245/255, blue: 246/255, alpha: 1)
+        static let screenHeight = UIScreen.main.bounds.height
+        static let topOffsetTableView: CGFloat = screenHeight < 668 ? 320 : 470
+    }
     
     // MARK: - UI Components
     private let nameLabel = UILabel()
@@ -29,14 +36,12 @@ class CoinDetailViewController: UIViewController {
     private let segmentedControl = UISegmentedControl()
     private let tableView = UITableView()
     private let changeStackView = UIStackView()
-    
     private let navigationButton = UIButton()
     
     // MARK: - Init
     init(coin: Coin) {
-        self.coin = coin
+        self.coinDetailViewModel = CoinDetailViewModel(coin: coin)
         super.init(nibName: nil, bundle: nil)
-        selectedSupplyValue = coin.supply1D
     }
     
     required init?(coder: NSCoder) {
@@ -46,7 +51,7 @@ class CoinDetailViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(red: 243/255, green: 245/255, blue: 246/255, alpha: 1)
+        view.backgroundColor = CoinDetailConstants.backgroundColor
         
         setupUI()
         setupLayout()
@@ -58,27 +63,24 @@ class CoinDetailViewController: UIViewController {
 private extension CoinDetailViewController {
     
     func setupUI() {
-        // MARK: Coin Name Label
-        nameLabel.text = "\(coin.name) (\(coin.symbol.uppercased()))"
+        // MARK: Labels
+        nameLabel.text = coinDetailViewModel.displayName
         nameLabel.font = .systemFont(ofSize: 14, weight: .semibold)
         
-        // MARK: Coin Price Label
-        priceLabel.text = "$\(coin.price)"
+        priceLabel.text = coinDetailViewModel.displayPrice
         priceLabel.font = .systemFont(ofSize: 28, weight: .semibold)
         
-        // MARK: Change Label
-        changeLabel.text = "\(coin.change)"
+        changeLabel.text = coinDetailViewModel.displayChange
         changeLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         changeLabel.textColor = .lightGray
         
         // MARK: Change Image Arrow
         changeImageView.contentMode = .scaleAspectFit
-        let arrowImageName = coin.isPositiveChange ? "arrow up" : "arrow down"
-        changeImageView.image = UIImage(named: arrowImageName)
+        changeImageView.image = UIImage(named: coinDetailViewModel.arrowImageName)
         
         // MARK: Segmented Control
         segmentedControl.removeAllSegments()
-        for (index, title) in timeFilterSections.enumerated() {
+        for (index, title) in coinDetailViewModel.timeFilters.enumerated() {
             segmentedControl.insertSegment(withTitle: title, at: index, animated: false)
         }
         segmentedControl.selectedSegmentIndex = 0
@@ -96,18 +98,7 @@ private extension CoinDetailViewController {
     }
     
     @objc private func segmentedControlChanged(_ sender: UISegmentedControl) {
-        switch sender.selectedSegmentIndex {
-        case 0:
-            selectedSupplyValue = coin.supply1D
-        case 1:
-            selectedSupplyValue = coin.supply7D
-        case 2:
-            selectedSupplyValue = coin.supply1Y
-        case 3:
-            selectedSupplyValue = coin.supplyEver
-        default:
-            selectedSupplyValue = nil
-        }
+        _ = coinDetailViewModel.supplyValue(for: sender.selectedSegmentIndex)
         tableView.reloadData()
     }
 }
@@ -125,9 +116,6 @@ private extension CoinDetailViewController {
         changeStackView.spacing = 4
         changeStackView.addArrangedSubview(changeImageView)
         changeStackView.addArrangedSubview(changeLabel)
-        
-        let screenHeight = UIScreen.main.bounds.height
-        let topOffsetTableView: CGFloat = screenHeight < 668 ? 320 : 470
         
         nameLabel.snp.makeConstraints { make in
             make.top.equalTo(view.snp.top).offset(80)
@@ -154,7 +142,7 @@ private extension CoinDetailViewController {
         }
         
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(topOffsetTableView)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(CoinDetailConstants.topOffsetTableView)
             make.width.equalToSuperview()
             make.height.equalTo(242)
         }
@@ -186,7 +174,7 @@ private extension CoinDetailViewController {
 extension CoinDetailViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return coinDetailViewModel.numberOfRows()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -195,8 +183,9 @@ extension CoinDetailViewController: UITableViewDataSource, UITableViewDelegate {
         else {
             return UITableViewCell()
         }
+        let coin = coinDetailViewModel.coinData()
         cell.configure(with: coin)
-        cell.configureSupply(with: coin, value: selectedSupplyValue)
+        cell.configureSupply(with: coin, value: coinDetailViewModel.selectedSupplyValue())
         return cell
     }
 }
