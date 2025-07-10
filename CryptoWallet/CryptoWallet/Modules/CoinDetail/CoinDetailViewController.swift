@@ -8,12 +8,18 @@ class CoinDetailViewController: UIViewController {
             name: "Etherium",
             symbol: "ETH",
             price: 32128.80,
-            change: 2.5
+            change: 2.5,
+            marketcap: 231233,
+            supply1D: 1,
+            supply7D: 7,
+            supply1Y: 365,
+            supplyEver: 1421421
         )
     ]
     
     private let coin: Coin
     private let timeFilterSections = ["24H", "1W", "1Y", "ALL", "Point"]
+    private var selectedSupplyValue: Double?
     
     // MARK: - UI Components
     private let nameLabel = UILabel()
@@ -22,6 +28,7 @@ class CoinDetailViewController: UIViewController {
     private let changeImageView = UIImageView()
     private let segmentedControl = UISegmentedControl()
     private let tableView = UITableView()
+    private let changeStackView = UIStackView()
     
     private let navigationButton = UIButton()
     
@@ -29,6 +36,7 @@ class CoinDetailViewController: UIViewController {
     init(coin: Coin) {
         self.coin = coin
         super.init(nibName: nil, bundle: nil)
+        selectedSupplyValue = coin.supply1D
     }
     
     required init?(coder: NSCoder) {
@@ -88,7 +96,19 @@ private extension CoinDetailViewController {
     }
     
     @objc private func segmentedControlChanged(_ sender: UISegmentedControl) {
-        let selectedValue = timeFilterSections[sender.selectedSegmentIndex]
+        switch sender.selectedSegmentIndex {
+        case 0:
+            selectedSupplyValue = coin.supply1D
+        case 1:
+            selectedSupplyValue = coin.supply7D
+        case 2:
+            selectedSupplyValue = coin.supply1Y
+        case 3:
+            selectedSupplyValue = coin.supplyEver
+        default:
+            selectedSupplyValue = nil
+        }
+        tableView.reloadData()
     }
 }
 
@@ -96,32 +116,34 @@ private extension CoinDetailViewController {
 private extension CoinDetailViewController {
     
     func setupLayout() {
-        [nameLabel, priceLabel, changeLabel, changeImageView, segmentedControl, tableView].forEach {
+        [nameLabel, priceLabel, changeStackView, segmentedControl, tableView].forEach {
             view.addSubview($0)
         }
+        
+        changeStackView.axis = .horizontal
+        changeStackView.alignment = .center
+        changeStackView.spacing = 4
+        changeStackView.addArrangedSubview(changeImageView)
+        changeStackView.addArrangedSubview(changeLabel)
+        
+        let screenHeight = UIScreen.main.bounds.height
+        let topOffsetTableView: CGFloat = screenHeight < 668 ? 320 : 470
         
         nameLabel.snp.makeConstraints { make in
             make.top.equalTo(view.snp.top).offset(80)
             make.centerX.equalToSuperview()
-            //            make.width.equalTo(106)
             make.height.equalTo(21)
         }
         
         priceLabel.snp.makeConstraints { make in
             make.top.equalTo(nameLabel.snp.bottom).offset(20)
             make.centerX.equalToSuperview()
-            //            make.width.equalTo(150)
             make.height.equalTo(42)
         }
         
-        changeLabel.snp.makeConstraints { make in
+        changeStackView.snp.makeConstraints { make in
             make.top.equalTo(priceLabel.snp.bottom).offset(3)
-            make.leading.equalTo(view.snp.leading).offset(190)
-        }
-        
-        changeImageView.snp.makeConstraints { make in
-            make.top.equalTo(priceLabel.snp.bottom).offset(6)
-            make.leading.equalTo(view.snp.leading).offset(175)
+            make.centerX.equalToSuperview()
         }
         
         segmentedControl.snp.makeConstraints { make in
@@ -132,7 +154,7 @@ private extension CoinDetailViewController {
         }
         
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(470)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(topOffsetTableView)
             make.width.equalToSuperview()
             make.height.equalTo(242)
         }
@@ -164,7 +186,7 @@ private extension CoinDetailViewController {
 extension CoinDetailViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -174,6 +196,7 @@ extension CoinDetailViewController: UITableViewDataSource, UITableViewDelegate {
             return UITableViewCell()
         }
         cell.configure(with: coin)
+        cell.configureSupply(with: coin, value: selectedSupplyValue)
         return cell
     }
 }
