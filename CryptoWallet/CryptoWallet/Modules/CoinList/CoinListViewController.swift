@@ -146,6 +146,7 @@ private extension CoinListViewController {
             make.centerX.equalToSuperview()
             make.width.equalTo(view.bounds.width)
             make.height.equalTo(554)
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
         }
         
         homeLabel.snp.makeConstraints { make in
