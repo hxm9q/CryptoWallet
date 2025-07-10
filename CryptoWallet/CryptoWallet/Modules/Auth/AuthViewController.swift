@@ -27,6 +27,9 @@ class AuthViewController: UIViewController {
     
     private let loginButton = UIButton()
     
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,6 +53,9 @@ private extension AuthViewController {
         
         usernameTextField.delegate = self
         passwordTextField.delegate = self
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 }
 
@@ -110,8 +116,21 @@ private extension AuthViewController {
 private extension AuthViewController {
     
     func setupLayout() {
-        [logoImageView, usernameTextField, passwordTextField, loginButton].forEach {
-            view.addSubview($0)
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        
+        contentView.addSubview(logoImageView)
+        contentView.addSubview(usernameTextField)
+        contentView.addSubview(passwordTextField)
+        contentView.addSubview(loginButton)
+        
+        scrollView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        contentView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.width.equalToSuperview()
         }
         
         let screenHeight = UIScreen.main.bounds.height
@@ -119,7 +138,7 @@ private extension AuthViewController {
         let loginButtonBottomOffset: CGFloat = screenHeight < 668 ? 59 : 133
         
         logoImageView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(13)
+            make.top.equalTo(contentView.safeAreaLayoutGuide).offset(13)
             make.centerX.equalToSuperview()
             make.size.equalTo(AuthConstants.logoSize)
         }
@@ -141,7 +160,7 @@ private extension AuthViewController {
             make.centerX.equalToSuperview()
             make.width.equalTo(AuthConstants.textFieldSize.width)
             make.height.equalTo(AuthConstants.textFieldSize.height)
-            make.bottom.equalToSuperview().offset(-loginButtonBottomOffset)
+            make.bottom.equalTo(contentView).offset(-loginButtonBottomOffset)
         }
     }
 }
@@ -247,6 +266,24 @@ extension AuthViewController {
     
     @objc func dismissKeyboard() {
         view.endEditing(true)
+    }
+    
+    @objc func keyboardWillShow(_ notification: Notification) {
+        guard
+            let userInfo = notification.userInfo,
+            let keyboardFrameValue = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
+        else { return }
+        
+        let keyboardFrame = keyboardFrameValue.cgRectValue
+        let keyboardHeight = keyboardFrame.height
+        
+        scrollView.contentInset.bottom = keyboardHeight
+        scrollView.verticalScrollIndicatorInsets.bottom = keyboardHeight
+    }
+
+    @objc func keyboardWillHide(_ notification: Notification) {
+        scrollView.contentInset.bottom = 0
+        scrollView.verticalScrollIndicatorInsets.bottom = 0
     }
 }
 
