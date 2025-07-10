@@ -48,7 +48,12 @@ class CoinService {
                         name: coinInfo.name,
                         symbol: coinInfo.symbol,
                         price: coinInfo.metrics.marketData.priceUsd,
-                        change: coinInfo.metrics.marketData.percentChangeUsdLast24Hours
+                        change: coinInfo.metrics.marketData.percentChangeUsdLast24Hours,
+                        marketcap: coinInfo.metrics.marketcap.currentMarketcapUsd,
+                        supply1D: coinInfo.metrics.supplyActivity.supplyActive1D,
+                        supply7D: coinInfo.metrics.supplyActivity.supplyActive7D,
+                        supply1Y: coinInfo.metrics.supplyActivity.supplyActive1Y,
+                        supplyEver: coinInfo.metrics.supplyActivity.supplyActiveEver
                     )
                 }
                 
