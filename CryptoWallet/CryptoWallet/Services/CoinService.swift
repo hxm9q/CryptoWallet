@@ -6,10 +6,9 @@ class CoinService {
     private init() {}
     
     private let urlString = "https://data.messari.io/api/v1/assets"
-    private let coinsToFetch = ["btc", "eth", "tron", "luna", "polkadot", "dogecoin", "tether", "stellar", "cardano", "xrp"]
+    private let coinsToFetch = ["btc", "eth", "tron", "luna", "polkadot", "doge", "tether", "stellar", "cardano", "xrp"]
     
     func fetchCoins(completion: @escaping ([Coin]?, Error?) -> Void) {
-        
         guard let url = URL(string: urlString) else {
             completion(nil, NSError(
                 domain: "",
@@ -37,7 +36,14 @@ class CoinService {
             do {
                 let decoder = JSONDecoder()
                 let coinData = try decoder.decode(CoinData.self, from: data)
-                let coins = coinData.data.map { coinInfo in
+                
+                let filteredData = coinData.data.filter { coinInfo in
+                    let lowercasedName = coinInfo.name.lowercased()
+                    let lowercasedSymbol = coinInfo.symbol.lowercased()
+                    return self.coinsToFetch.contains(lowercasedName) || self.coinsToFetch.contains(lowercasedSymbol)
+                }
+
+                let coins = filteredData.map { coinInfo in
                     Coin(
                         name: coinInfo.name,
                         symbol: coinInfo.symbol,
@@ -45,6 +51,7 @@ class CoinService {
                         change: coinInfo.metrics.marketData.percentChangeUsdLast24Hours
                     )
                 }
+                
                 completion(coins, nil)
             } catch {
                 completion(nil, error)
