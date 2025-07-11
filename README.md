@@ -51,13 +51,13 @@
 
 # Скриншоты
 
-
-
-
-
-
-
-
-
-
-
+> <img src="CryptoWallet/CryptoWallet/Resources/Images/auth1.png" width="300"/>
+> <img src="CryptoWallet/CryptoWallet/Resources/Images/auth2.png" width="300"/>
+> <img src="CryptoWallet/CryptoWallet/Resources/Images/auth3.png" width="300"/>
+> <img src="CryptoWallet/CryptoWallet/Resources/Images/coinlist1.png" width="300"/>
+> <img src="CryptoWallet/CryptoWallet/Resources/Images/coinlist2.png" width="300"/>
+> <img src="CryptoWallet/CryptoWallet/Resources/Images/coinlist3.png" width="300"/>
+> <img src="CryptoWallet/CryptoWallet/Resources/Images/coinlist4.png" width="300"/>
+> <img src="CryptoWallet/CryptoWallet/Resources/Images/coindetail1.png" width="300"/>
+> <img src="CryptoWallet/CryptoWallet/Resources/Images/coindetail2.png" width="300"/>
+> <img src="CryptoWallet/CryptoWallet/Resources/Images/coindetail3.png" width="300"/>
