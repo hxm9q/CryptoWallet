@@ -164,6 +164,10 @@ private extension CoinDetailViewController {
         let barButtonItem = UIBarButtonItem(customView: navigationButton)
         navigationItem.hidesBackButton = true
         navigationItem.leftBarButtonItem = barButtonItem
+        
+        let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(backButtonTapped))
+        swipeGesture.direction = .right
+        view.addGestureRecognizer(swipeGesture)
     }
     
     @objc func backButtonTapped() {
