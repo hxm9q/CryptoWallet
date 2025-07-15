@@ -108,7 +108,9 @@ class CoinDetailCell: UITableViewCell {
             
             supplyAmountLabel.text = result + " \(coin.symbol)"
         } else {
-            supplyAmountLabel.text = "nil"
+            supplyAmountLabel.text = "Not available"
+            supplyAmountLabel.textColor = .lightGray
+            supplyAmountLabel.font = .italicSystemFont(ofSize: 14)
         }
     }
 }

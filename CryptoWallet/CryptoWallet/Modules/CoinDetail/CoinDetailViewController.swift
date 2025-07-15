@@ -11,7 +11,7 @@ class CoinDetailViewController: UIViewController {
             price: 32128.80,
             change: 2.5,
             marketcap: 231233,
-            supply1D: 1,
+            supply1D: nil,
             supply7D: 7,
             supply1Y: 365,
             supplyEver: 1421421
@@ -95,6 +95,7 @@ private extension CoinDetailViewController {
         tableView.layer.cornerRadius = 40
         tableView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         tableView.clipsToBounds = true
+        tableView.isScrollEnabled = false
     }
     
     @objc private func segmentedControlChanged(_ sender: UISegmentedControl) {
