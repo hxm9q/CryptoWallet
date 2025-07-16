@@ -8,8 +8,16 @@ struct Coin {
     
     let price: String
     let priceValue: Double
-    let change: String
-    let isPositiveChange: Bool
+    
+    let change24H: Double?
+    let change7D: Double?
+    let change1Y: Double?
+    let changeEver: Double?
+    
+    let change24HString: String?
+    let change7DString: String?
+    let change1YString: String?
+    let changeEverString: String?
     
     let marketcap: Double
     let marketcapString: String
@@ -19,16 +27,27 @@ struct Coin {
     let supply1Y: Double?
     let supplyEver: Double?
     
-    init(name: String, symbol: String, price: Double, change: Double, marketcap: Double,
+    init(name: String, symbol: String, price: Double,
+         change24H: Double?, change7D: Double?, change1Y: Double?, changeEver: Double?,
+         marketcap: Double,
          supply1D: Double?, supply7D: Double?, supply1Y: Double?, supplyEver: Double?) {
+        
         self.name = name
         self.symbol = symbol
         self.image = UIImage(named: symbol.lowercased())
         
         self.price = priceFormatter.string(from: NSNumber(value: price)) ?? "\(price)"
         self.priceValue = price
-        self.change = String(format: "%.2f%%", change)
-        self.isPositiveChange = change >= 0
+        
+        self.change24H = change24H
+        self.change7D = change7D
+        self.change1Y = change1Y
+        self.changeEver = changeEver
+        
+        self.change24HString = change24H != nil ? String(format: "%.2f%%", change24H!) : nil
+        self.change7DString = change7D != nil ? String(format: "%.2f%%", change7D!) : nil
+        self.change1YString = change1Y != nil ? String(format: "%.2f%%", change1Y!) : nil
+        self.changeEverString = changeEver != nil ? String(format: "%.2f%%", changeEver!) : nil
         
         self.marketcap = marketcap
         self.marketcapString = capFormatter.string(from: NSNumber(value: marketcap)) ?? "\(marketcap)"
@@ -37,6 +56,31 @@ struct Coin {
         self.supply7D = supply7D
         self.supply1Y = supply1Y
         self.supplyEver = supplyEver
+    }
+    
+    func getChange(for index: Int) -> Double? {
+        switch index {
+        case 0: return change24H
+        case 1: return change7D
+        case 2: return change1Y
+        case 3: return changeEver
+        default: return nil
+        }
+    }
+    
+    func getChangeString(for index: Int) -> String? {
+        switch index {
+        case 0: return change24HString
+        case 1: return change7DString
+        case 2: return change1YString
+        case 3: return changeEverString
+        default: return nil
+        }
+    }
+    
+    func isPositiveChange(for index: Int) -> Bool {
+        guard let change = getChange(for: index) else { return false }
+        return change >= 0
     }
     
     private let priceFormatter: NumberFormatter = {

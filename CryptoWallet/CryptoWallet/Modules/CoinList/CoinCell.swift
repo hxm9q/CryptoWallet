@@ -115,10 +115,21 @@ class CoinCell: UITableViewCell {
         nameLabel.text = "\(coin.name)"
         tickerLabel.text = "\(coin.symbol)"
         priceLabel.text = "$" + coin.price
-        changeLabel.text = coin.change
         
-        let arrowImageName = coin.isPositiveChange ? "arrow up" : "arrow down"
-        changeArrowImageView.image = UIImage(named: arrowImageName)
+        if let change24HString = coin.change24HString {
+            changeLabel.text = change24HString
+            changeLabel.textColor = .lightGray
+            changeLabel.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+            
+            let arrowImageName = coin.isPositiveChange(for: 0) ? "arrow up" : "arrow down"
+            changeArrowImageView.image = UIImage(named: arrowImageName)
+            changeArrowImageView.isHidden = false
+        } else {
+            changeLabel.text = "N/A"
+            changeLabel.textColor = .lightGray
+            changeLabel.font = UIFont.italicSystemFont(ofSize: 14)
+            changeArrowImageView.isHidden = true
+        }
         
         coinImageView.image = coin.image
     }

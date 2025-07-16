@@ -107,6 +107,8 @@ class CoinDetailCell: UITableViewCell {
             let result = formatter.string(from: NSNumber(value: supply)) ?? "\(supply)"
             
             supplyAmountLabel.text = result + " \(coin.symbol)"
+            supplyAmountLabel.textColor = .black
+            supplyAmountLabel.font = .systemFont(ofSize: 14, weight: .semibold)
         } else {
             supplyAmountLabel.text = "Not available"
             supplyAmountLabel.textColor = .lightGray

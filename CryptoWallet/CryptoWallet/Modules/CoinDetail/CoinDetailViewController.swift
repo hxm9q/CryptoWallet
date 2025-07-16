@@ -9,7 +9,10 @@ class CoinDetailViewController: UIViewController {
             name: "Bitcoin",
             symbol: "BTC",
             price: 32128.80,
-            change: 2.5,
+            change24H: 2.5,
+            change7D: -1.2,
+            change1Y: nil,
+            changeEver: 120.5,
             marketcap: 231233,
             supply1D: nil,
             supply7D: 7,
@@ -56,6 +59,12 @@ class CoinDetailViewController: UIViewController {
         setupUI()
         setupLayout()
         setupNavigationButton()
+        updateChangeDisplay()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: false)
     }
 }
 
@@ -70,13 +79,12 @@ private extension CoinDetailViewController {
         priceLabel.text = coinDetailViewModel.displayPrice
         priceLabel.font = .systemFont(ofSize: 28, weight: .semibold)
         
-        changeLabel.text = coinDetailViewModel.displayChange
+        changeLabel.text = ""
         changeLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         changeLabel.textColor = .lightGray
         
         // MARK: Change Image Arrow
         changeImageView.contentMode = .scaleAspectFit
-        changeImageView.image = UIImage(named: coinDetailViewModel.arrowImageName)
         
         // MARK: Segmented Control
         segmentedControl.removeAllSegments()
@@ -98,9 +106,33 @@ private extension CoinDetailViewController {
         tableView.isScrollEnabled = false
     }
     
-    @objc private func segmentedControlChanged(_ sender: UISegmentedControl) {
-        _ = coinDetailViewModel.supplyValue(for: sender.selectedSegmentIndex)
+    @objc func segmentedControlChanged(_ sender: UISegmentedControl) {
+        coinDetailViewModel.updateSelectedIndex(sender.selectedSegmentIndex)
+        updateChangeDisplay()
         tableView.reloadData()
+    }
+    
+    func updateChangeDisplay() {
+        if let changeValue = coinDetailViewModel.selectedChangeValue() {
+            let formatter = NumberFormatter()
+            formatter.minimumFractionDigits = 0
+            formatter.maximumFractionDigits = 2
+            let formattedNumber = formatter.string(from: NSNumber(value: changeValue)) ?? "\(changeValue)"
+            let formattedChange = "\(formattedNumber)%"
+            
+            changeLabel.text = formattedChange
+            changeLabel.textColor = .lightGray
+            changeLabel.font = .systemFont(ofSize: 14, weight: .medium)
+            
+            let imageName = coinDetailViewModel.arrowImageName
+            changeImageView.image = UIImage(named: imageName)
+            changeImageView.isHidden = false
+        } else {
+            changeLabel.text = "N/A"
+            changeLabel.textColor = .lightGray
+            changeLabel.font = .italicSystemFont(ofSize: 14)
+            changeImageView.isHidden = true
+        }
     }
 }
 

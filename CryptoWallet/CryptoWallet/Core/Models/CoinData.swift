@@ -28,11 +28,17 @@ struct Metrics: Codable {
 // MARK: - MarketData
 struct MarketData: Codable {
     let priceUsd: Double
-    let percentChangeUsdLast24Hours: Double
+    let percentChangeUsdLast24Hours: Double?
+    let percentChangeUsdLast7Days: Double?
+    let percentChangeUsdLast1Year: Double?
+    let percentChangeUsdEver: Double?
     
     enum CodingKeys: String, CodingKey {
         case priceUsd = "price_usd"
         case percentChangeUsdLast24Hours = "percent_change_usd_last_24_hours"
+        case percentChangeUsdLast7Days
+        case percentChangeUsdLast1Year
+        case percentChangeUsdEver
     }
 }
 

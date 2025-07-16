@@ -21,11 +21,14 @@ final class CoinDetailViewModel {
     }
     
     var displayChange: String {
-        return "\(coin.change)"
+        guard let changeString = coin.getChangeString(for: selectedIndex) else {
+            return "N/A"
+        }
+        return changeString
     }
     
     var arrowImageName: String {
-        return coin.isPositiveChange ? "arrow up" : "arrow down"
+        coin.isPositiveChange(for: selectedIndex) ? "arrow up" : "arrow down"
     }
     
     var timeFilters: [String] {
@@ -39,21 +42,42 @@ final class CoinDetailViewModel {
     func supplyValue(for index: Int) -> Double? {
         selectedIndex = index
         switch index {
-        case 0:
-            return coin.supply1D
-        case 1:
-            return coin.supply7D
-        case 2:
-            return coin.supply1Y
-        case 3:
-            return coin.supplyEver
-        default:
-            return nil
+        case 0: return coin.supply1D
+        case 1: return coin.supply7D
+        case 2: return coin.supply1Y
+        case 3: return coin.supplyEver
+        default: return nil
         }
     }
     
     func selectedSupplyValue() -> Double? {
         return supplyValue(for: selectedIndex)
+    }
+    
+    func changeValue(for index: Int) -> Double? {
+        switch index {
+        case 0: return coin.change24H
+        case 1: return coin.change7D
+        case 2: return coin.change1Y
+        case 3: return coin.changeEver
+        default: return nil
+        }
+    }
+    
+    func selectedChangeValue() -> Double? {
+        return changeValue(for: selectedIndex)
+    }
+    
+    func selectedChangeString() -> String? {
+        return coin.getChangeString(for: selectedIndex)
+    }
+    
+    func isSelectedChangePositive() -> Bool {
+        return coin.isPositiveChange(for: selectedIndex)
+    }
+    
+    func updateSelectedIndex(_ index: Int) {
+        selectedIndex = index
     }
     
     func coinData() -> Coin {
