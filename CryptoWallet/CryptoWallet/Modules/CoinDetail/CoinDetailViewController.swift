@@ -33,7 +33,7 @@ class CoinDetailViewController: UIViewController {
     private let priceLabel = UILabel()
     private let changeLabel = UILabel()
     private let changeImageView = UIImageView()
-    private let segmentedControl = UISegmentedControl()
+    private let segmentedControl = SegmentedControl()
     private let tableView = UITableView()
     private let changeStackView = UIStackView()
     private let navigationButton = UIButton()
