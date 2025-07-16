@@ -13,7 +13,7 @@ class CoinListViewController: UIViewController {
         static let tableViewBackgroundColor = UIColor(red: 247/255, green: 247/255, blue: 250/255, alpha: 1)
         static let learnMoreButtonBackgroundColor = UIColor(red: 250/255, green: 251/255, blue: 251/255, alpha: 1)
         static let homeImageViewShadowColor = UIColor(red: 231/255, green: 68/255, blue: 109/255, alpha: 1).cgColor
-        static let homeImageViewSize: CGFloat = 242
+        static let homeImageViewSize: CGFloat = 210
     }
     
     // MARK: - UI Components
@@ -38,6 +38,11 @@ class CoinListViewController: UIViewController {
         setupTableView()
         bindViewModel()
         coinListViewModel.fetchCoins()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
     }
 }
 
@@ -67,8 +72,8 @@ private extension CoinListViewController {
         
         // MARK: Buttons
         refreshLogoutButton.setImage(UIImage(named: "threedots"), for: .normal)
-        refreshLogoutButton.imageView?.contentMode = .scaleToFill
-        refreshLogoutButton.layer.cornerRadius = 25
+        refreshLogoutButton.imageView?.contentMode = .scaleAspectFit
+        refreshLogoutButton.layer.cornerRadius = 24
         refreshLogoutButton.clipsToBounds = true
         refreshLogoutButton.backgroundColor = .white.withAlphaComponent(0.8)
         refreshLogoutButton.addTarget(self, action: #selector(refreshLogoutButtonTapped), for: .touchUpInside)
@@ -105,49 +110,46 @@ private extension CoinListViewController {
 private extension CoinListViewController {
     
     func setupLayout() {
-        [homeImageView, tableView, homeLabel, refreshLogoutButton, affiliateLabel, learnMoreButton].forEach {
+        [homeImageView, tableView, homeLabel, affiliateLabel, learnMoreButton, refreshLogoutButton].forEach {
             view.addSubview($0)
         }
         
-        tableView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(230)
-            make.centerX.equalToSuperview()
-            make.width.equalTo(view.bounds.width)
-            make.height.equalTo(554)
-            make.bottom.equalTo(view.safeAreaLayoutGuide)
-        }
-        
-        homeLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(-32)
-            make.leading.equalTo(view.snp.leading).offset(25)
-            make.height.equalTo(48)
-            make.width.equalTo(97)
-        }
-        
-        affiliateLabel.snp.makeConstraints { make in
-            make.top.equalTo(homeLabel.snp.bottom).offset(46)
-            make.leading.equalTo(view.snp.leading).offset(25)
-            make.height.equalTo(30)
-            make.width.equalTo(172)
-        }
-        
         refreshLogoutButton.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(-32)
+            make.top.equalTo(view.snp.top).offset(100)
             make.trailing.equalTo(view.snp.trailing).offset(-25)
             make.width.height.equalTo(48)
         }
         
+        homeLabel.snp.makeConstraints { make in
+            make.top.equalTo(refreshLogoutButton.snp.top)
+            make.leading.equalToSuperview().offset(25)
+        }
+        
+        affiliateLabel.snp.makeConstraints { make in
+            make.top.equalTo(homeLabel.snp.bottom).offset(46)
+            make.leading.equalTo(homeLabel.snp.leading)
+            make.height.equalTo(30)
+            make.width.equalTo(172)
+        }
+        
         learnMoreButton.snp.makeConstraints { make in
-            make.top.equalTo(affiliateLabel.snp.bottom).offset(21)
-            make.leading.equalTo(view.snp.leading).offset(25)
+            make.top.equalTo(affiliateLabel.snp.bottom).offset(12)
+            make.leading.equalTo(homeLabel.snp.leading)
             make.height.equalTo(35)
             make.width.equalTo(127)
         }
         
         homeImageView.snp.makeConstraints { make in
-            make.top.equalTo(refreshLogoutButton.snp.bottom).offset(46)
-            make.leading.equalTo(view.snp.leading).offset(165)
+            make.top.equalTo(refreshLogoutButton.snp.bottom).offset(21)
+            make.trailing.equalTo(view.snp.trailing).inset(-2)
             make.width.height.equalTo(CoinListConstants.homeImageViewSize)
+        }
+        
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(learnMoreButton.snp.bottom).offset(55)
+            make.leading.equalToSuperview()
+            make.trailing.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
         }
         
         activityIndicator.snp.makeConstraints { make in
