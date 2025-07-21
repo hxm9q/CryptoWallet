@@ -28,6 +28,8 @@ class CoinListViewController: UIViewController {
     private var refreshLogoutMenu: UIView?
     private var sortMenu: UIView?
     
+    private var tapGestureRecognizer: UITapGestureRecognizer?
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -226,11 +228,52 @@ private extension CoinListViewController {
     }
 }
 
+// MARK: - Menu Handling
+private extension CoinListViewController {
+    
+    func enableTapToCloseMenu() {
+        if tapGestureRecognizer == nil {
+            tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTapToCloseMenu))
+            tapGestureRecognizer?.delegate = self
+            view.addGestureRecognizer(tapGestureRecognizer!)
+        }
+    }
+    
+    func disableTapToCloseMenu() {
+        if let gestureRecognizer = tapGestureRecognizer {
+            view.removeGestureRecognizer(gestureRecognizer)
+            tapGestureRecognizer = nil
+        }
+    }
+    
+    @objc func handleTapToCloseMenu() {
+        hideMenus()
+    }
+    
+    func hideMenus() {
+        hideRefreshLogoutMenu()
+        hideSortMenu()
+        disableTapToCloseMenu()
+    }
+    
+    func hideRefreshLogoutMenu() {
+        refreshLogoutMenu?.removeFromSuperview()
+        refreshLogoutMenu = nil
+    }
+    
+    func hideSortMenu() {
+        sortMenu?.removeFromSuperview()
+        sortMenu = nil
+    }
+}
+
 // MARK: - Refresh & Logout Pop Up Menu
 private extension CoinListViewController {
     
     @objc func refreshLogoutButtonTapped() {
         if refreshLogoutMenu == nil {
+            hideSortMenu()
+            
             let menu = UIView()
             menu.backgroundColor = .white
             menu.layer.cornerRadius = 16
@@ -280,9 +323,9 @@ private extension CoinListViewController {
             }
             
             refreshLogoutMenu = menu
+            enableTapToCloseMenu()
         } else {
-            refreshLogoutMenu?.removeFromSuperview()
-            refreshLogoutMenu = nil
+            hideMenus()
         }
     }
     
@@ -294,14 +337,12 @@ private extension CoinListViewController {
         activityIndicator.startAnimating()
         coinListViewModel.fetchCoins()
         
-        refreshLogoutMenu?.removeFromSuperview()
-        refreshLogoutMenu = nil
+        hideMenus()
     }
     
     @objc func logoutButtonTapped() {
         authViewModel.logout()
-        refreshLogoutMenu?.removeFromSuperview()
-        refreshLogoutMenu = nil
+        hideMenus()
     }
 }
 
@@ -310,6 +351,8 @@ private extension CoinListViewController {
     
     @objc func sortButtonTapped() {
         if sortMenu == nil {
+            hideRefreshLogoutMenu()
+            
             let menu = UIView()
             menu.backgroundColor = .white
             menu.layer.cornerRadius = 16
@@ -353,9 +396,9 @@ private extension CoinListViewController {
             }
             
             sortMenu = menu
+            enableTapToCloseMenu()
         } else {
-            sortMenu?.removeFromSuperview()
-            sortMenu = nil
+            hideMenus()
         }
     }
     
@@ -369,8 +412,7 @@ private extension CoinListViewController {
                 self.tableView.reloadData()
             }
         )
-        sortMenu?.removeFromSuperview()
-        sortMenu = nil
+        hideMenus()
     }
     
     @objc func descendingButtonTapped() {
@@ -383,8 +425,7 @@ private extension CoinListViewController {
                 self.tableView.reloadData()
             }
         )
-        sortMenu?.removeFromSuperview()
-        sortMenu = nil
+        hideMenus()
     }
 }
 
@@ -411,6 +452,20 @@ extension CoinListViewController: UITableViewDataSource, UITableViewDelegate {
         guard let selectedCoin = coinListViewModel.coin(at: indexPath.row) else { return }
         let coinDetailVC = CoinDetailViewController(coin: selectedCoin)
         navigationController?.pushViewController(coinDetailVC, animated: true)
+    }
+}
+
+// MARK: - UIGestureRecognizerDelegate
+extension CoinListViewController: UIGestureRecognizerDelegate {
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        if let menu = refreshLogoutMenu, menu.bounds.contains(touch.location(in: menu)) {
+            return false
+        }
+        if let menu = sortMenu, menu.bounds.contains(touch.location(in: menu)) {
+            return false
+        }
+        return true
     }
 }
 
