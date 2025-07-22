@@ -1,42 +1,24 @@
 import Foundation
 
-class CoinService {
+protocol CoinRepositoryProtocol {
+    func fetchCoins(completion: @escaping (Result<[Coin], NetworkError>) -> Void)
+}
+
+class CoinRepository: CoinRepositoryProtocol {
     
-    static let shared = CoinService()
-    private init() {}
-    
-    private let urlString = "https://data.messari.io/api/v1/assets"
+    private let networkService: NetworkServiceProtocol
     private let coinsToFetch = ["btc", "eth", "tron", "luna", "polkadot", "doge", "tether", "stellar", "cardano", "xrp"]
     
-    func fetchCoins(completion: @escaping ([Coin]?, Error?) -> Void) {
-        guard let url = URL(string: urlString) else {
-            completion(nil, NSError(
-                domain: "",
-                code: -1,
-                userInfo: [NSLocalizedDescriptionKey: "Invalid URL"]
-            ))
-            return
-        }
-        
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error = error {
-                completion(nil, error)
-                return
-            }
+    init(networkService: NetworkServiceProtocol = NetworkService.shared) {
+        self.networkService = networkService
+    }
+    
+    func fetchCoins(completion: @escaping (Result<[Coin], NetworkError>) -> Void) {
+        networkService.request(CoinAPI.fetchCoins, responseType: CoinData.self) { [weak self] result in
+            guard let self = self else { return }
             
-            guard let data = data else {
-                completion(nil, NSError(
-                    domain: "",
-                    code: -2,
-                    userInfo: [NSLocalizedDescriptionKey: "No data received"]
-                ))
-                return
-            }
-            
-            do {
-                let decoder = JSONDecoder()
-                let coinData = try decoder.decode(CoinData.self, from: data)
-                
+            switch result {
+            case .success(let coinData):
                 let filteredData = coinData.data.filter { coinInfo in
                     let lowercasedName = coinInfo.name.lowercased()
                     let lowercasedSymbol = coinInfo.symbol.lowercased()
@@ -59,10 +41,11 @@ class CoinService {
                         supplyEver: coinInfo.metrics.supplyActivity.supplyActiveEver
                     )
                 }
-                completion(coins, nil)
-            } catch {
-                completion(nil, error)
+                completion(.success(coins))
+                
+            case .failure(let error):
+                completion(.failure(error))
             }
-        }.resume()
+        }
     }
 }

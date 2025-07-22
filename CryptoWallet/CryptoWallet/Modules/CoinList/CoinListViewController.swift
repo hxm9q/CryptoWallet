@@ -203,24 +203,33 @@ private extension CoinListViewController {
 private extension CoinListViewController {
     
     func bindViewModel() {
-        activityIndicator.startAnimating()
-        tableView.reloadData()
-        
         coinListViewModel.onUpdate = { [weak self] in
-            self?.activityIndicator.stopAnimating()
-            self?.tableView.reloadData()
+            DispatchQueue.main.async {
+                self?.tableView.reloadData()
+            }
         }
         
-        coinListViewModel.onError = { [weak self] message in
-            self?.activityIndicator.stopAnimating()
-            self?.showErrorAlert(message: message)
+        coinListViewModel.onError = { [weak self] error in
+            DispatchQueue.main.async {
+                self?.showErrorAlert(message: error)
+            }
+        }
+        
+        coinListViewModel.onLoadingStateChange = { [weak self] isLoading in
+            DispatchQueue.main.async {
+                if isLoading {
+                    self?.activityIndicator.startAnimating()
+                } else {
+                    self?.activityIndicator.stopAnimating()
+                }
+            }
         }
     }
     
     func showErrorAlert(message: String) {
         let alert = UIAlertController(
             title: "Ошибка",
-            message: "Не удалось загрузить данные: \(message)",
+            message: message,
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "OK", style: .default))
