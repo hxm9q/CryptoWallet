@@ -480,5 +480,5 @@ extension CoinListViewController: UIGestureRecognizerDelegate {
 
 // MARK: - Preview
 #Preview {
-    CoinListTabBarController()
+    MainTabBarController()
 }

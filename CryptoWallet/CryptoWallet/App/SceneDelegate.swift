@@ -10,39 +10,15 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    var appCoordinator: AppCoordinator?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
-        let window = UIWindow(windowScene: windowScene)
+        window = UIWindow(windowScene: windowScene)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(handleLogout), name: .didLogout, object: nil)
-        
-        let isAuthorized = UserDefaults.standard.bool(forKey: "isAuthorized")
-        
-        if isAuthorized {
-            let coinListTabBarController = CoinListTabBarController()
-            window.rootViewController = UINavigationController(rootViewController: coinListTabBarController)
-        } else {
-            let authVC = AuthViewController()
-            window.rootViewController = UINavigationController(rootViewController: authVC)
-        }
-        
-        self.window = window
-        window.makeKeyAndVisible()
-    }
-
-    @objc func handleLogout() {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            
-            let authVC = AuthViewController()
-            let nav = UINavigationController(rootViewController: authVC)
-            nav.modalPresentationStyle = .fullScreen
-            
-            self.window?.rootViewController = nav
-            self.window?.makeKeyAndVisible()
-        }
+        appCoordinator = AppCoordinator(window: window)
+        appCoordinator?.start()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

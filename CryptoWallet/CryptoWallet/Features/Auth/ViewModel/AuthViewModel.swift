@@ -9,6 +9,8 @@ final class AuthViewModel {
     @Published private(set) var isAuthorized: Bool = false
     @Published private(set) var errorMessage: String? = nil
     
+    weak var coordinator: AuthCoordinator?
+    
     private var cancellables = Set<AnyCancellable>()
     
     func loginUser() {
@@ -17,6 +19,8 @@ final class AuthViewModel {
             errorMessage = nil
             
             UserDefaults.standard.set(true, forKey: "isAuthorized")
+            
+            coordinator?.authenticationCompleted()
         } else {
             isAuthorized = false
             errorMessage = "Введены неправильный логин или пароль"
@@ -35,6 +39,10 @@ final class AuthViewModel {
     func loadAuthorizationState() {
         let saved = UserDefaults.standard.bool(forKey: "isAuthorized")
         isAuthorized = saved
+        
+        if saved {
+            coordinator?.authenticationCompleted()
+        }
     }
 }
 

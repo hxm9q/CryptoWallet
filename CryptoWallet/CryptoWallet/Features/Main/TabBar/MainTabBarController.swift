@@ -1,6 +1,6 @@
 import UIKit
 
-class CoinListTabBarController: UITabBarController {
+class MainTabBarController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,5 +37,5 @@ class CoinListTabBarController: UITabBarController {
 }
 
 #Preview {
-    CoinListTabBarController()
+    MainTabBarController()
 }

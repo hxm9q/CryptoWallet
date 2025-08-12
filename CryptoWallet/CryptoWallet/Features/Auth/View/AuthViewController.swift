@@ -4,8 +4,18 @@ import SnapKit
 
 class AuthViewController: UIViewController {
     
-    private let viewModel = AuthViewModel()
+    private let viewModel: AuthViewModel
     private var cancellables = Set<AnyCancellable>()
+    
+    // MARK: - Init
+    init(viewModel: AuthViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - Constants
     private enum AuthConstants {
@@ -181,19 +191,10 @@ private extension AuthViewController {
                 self?.showAlert(message: error)
             }
             .store(in: &cancellables)
-        
-        viewModel.$isAuthorized
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] isAuth in
-                if isAuth {
-                    self?.showCoinListTabBar()
-                }
-            }
-            .store(in: &cancellables)
     }
     
     func showCoinListTabBar() {
-        let vc = CoinListTabBarController()
+        let vc = MainTabBarController()
         let nav = UINavigationController(rootViewController: vc)
         nav.modalPresentationStyle = .fullScreen
         
@@ -302,5 +303,5 @@ extension AuthViewController: UITextFieldDelegate {
 
 // MARK: - Preview
 #Preview {
-    AuthViewController()
+    AuthViewController(viewModel: AuthViewModel())
 }
