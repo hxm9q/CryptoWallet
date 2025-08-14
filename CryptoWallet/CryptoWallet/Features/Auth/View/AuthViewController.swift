@@ -192,20 +192,6 @@ private extension AuthViewController {
             }
             .store(in: &cancellables)
     }
-    
-    func showCoinListTabBar() {
-        let vc = MainTabBarController()
-        let nav = UINavigationController(rootViewController: vc)
-        nav.modalPresentationStyle = .fullScreen
-        
-        guard
-            let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-            let window = windowScene.windows.first
-        else { return }
-        
-        window.rootViewController = nav
-        window.makeKeyAndVisible()
-    }
 }
 
 // MARK: - Alert Handling

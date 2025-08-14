@@ -5,9 +5,11 @@ class AppCoordinator: Coordinator {
     var navigationController: UINavigationController
     
     private var window: UIWindow?
+    private let factory: AppFactoryProtocol
     
-    init(window: UIWindow?) {
+    init(window: UIWindow?, factory: AppFactoryProtocol) {
         self.window = window
+        self.factory = factory
         self.navigationController = UINavigationController()
         setupWindow()
     }
@@ -34,12 +36,14 @@ class AppCoordinator: Coordinator {
     private func showMainFlow() {
         childCoordinators.removeAll { $0 is AuthCoordinator }
         
-        let mainTabBarController = MainTabBarController()
-        navigationController.setViewControllers([mainTabBarController], animated: true)
+        let mainCoordinator = factory.mainFactory.makeMainCoordinator(navigationController: navigationController)
+        mainCoordinator.delegate = self
+        addChild(mainCoordinator)
+        mainCoordinator.start()
     }
     
     private func showAuthFlow() {
-        let authCoordinator = AuthCoordinator(navigationController: navigationController)
+        let authCoordinator = factory.authFactory.makeAuthCoordinator(navigationController: navigationController)
         authCoordinator.delegate = self
         addChild(authCoordinator)
         authCoordinator.start()
@@ -52,6 +56,13 @@ extension AppCoordinator: AuthCoordinatorDelegate {
     }
     
     func authDidLogout() {
+        showAuthFlow()
+    }
+}
+
+extension AppCoordinator: MainCoordinatorDelegate {
+    func makeDidRequestLogout() {
+        UserDefaults.standard.set(false, forKey: "isAuthorized")
         showAuthFlow()
     }
 }

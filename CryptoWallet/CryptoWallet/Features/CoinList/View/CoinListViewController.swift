@@ -3,9 +3,17 @@ import SnapKit
 
 class CoinListViewController: UIViewController {
     
-    // MARK: - ViewModels
-    private let authViewModel = AuthViewModel()
-    private let coinListViewModel = CoinListViewModel()
+    // MARK: - ViewModel
+    private let coinListViewModel: CoinListViewModel
+    
+    init(coinListViewModel: CoinListViewModel) {
+        self.coinListViewModel = coinListViewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - CoinList Constants
     private enum CoinListConstants {
@@ -350,7 +358,7 @@ private extension CoinListViewController {
     }
     
     @objc func logoutButtonTapped() {
-        authViewModel.logout()
+        coinListViewModel.logout()
         hideMenus()
     }
 }

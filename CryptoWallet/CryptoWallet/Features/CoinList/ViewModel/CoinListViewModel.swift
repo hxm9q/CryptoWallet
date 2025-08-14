@@ -2,6 +2,8 @@ import Foundation
 
 final class CoinListViewModel {
     
+    weak var coordinator: CoinListCoordinator?
+    
     private let coinRepository: CoinRepositoryProtocol
     private(set) var coins: [Coin] = []
     private(set) var isLoading: Bool = false
@@ -62,5 +64,9 @@ final class CoinListViewModel {
     private func setLoadingState(_ loading: Bool) {
         isLoading = loading
         onLoadingStateChange?(loading)
+    }
+    
+    func logout() {
+        coordinator?.logout()
     }
 }
