@@ -208,7 +208,7 @@ private extension CoinDetailViewController {
     }
     
     @objc func backButtonTapped() {
-        navigationController?.popViewController(animated: true)
+        coinDetailViewModel.goBack()
     }
 }
 

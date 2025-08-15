@@ -35,9 +35,10 @@ class MainCoordinator: Coordinator {
         coinListCoordinator.start()
         
         let stocksNav = UINavigationController()
-        let stocksVC = UIViewController()
-        stocksVC.view.backgroundColor = .systemGray6
-        stocksNav.setViewControllers([stocksVC], animated: false)
+        let stocksCoordinator = factory.makeStockCoordinator(navigationController: stocksNav)
+        
+        addChild(stocksCoordinator)
+        stocksCoordinator.start()
         
         let walletNav = UINavigationController()
         let walletVC = UIViewController()

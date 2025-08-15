@@ -85,4 +85,8 @@ final class CoinDetailViewModel {
     func coinData() -> Coin {
         return coin
     }
+    
+    func goBack() {
+        coordinator?.goBackFromCoinDetail()
+    }
 }

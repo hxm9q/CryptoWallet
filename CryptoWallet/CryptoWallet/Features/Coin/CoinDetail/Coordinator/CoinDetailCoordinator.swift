@@ -20,4 +20,8 @@ class CoinDetailCoordinator: Coordinator {
         let viewController = factory.makeCoinDetailViewController(viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)
     }
+    
+    func goBackFromCoinDetail() {
+        navigationController.popViewController(animated: true)
+    }
 }
