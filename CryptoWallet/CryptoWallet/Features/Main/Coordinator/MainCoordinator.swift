@@ -26,25 +26,26 @@ class MainCoordinator: Coordinator {
     }
     
     private func setupTabBarCoordinators(tabBarController: MainTabBarController) {
+        // Coin List
         let coinListNav = UINavigationController()
         let coinListCoordinator = factory.makeCoinListCoordinator(navigationController: coinListNav)
-        
         coinListCoordinator.delegate = self
-        
         addChild(coinListCoordinator)
         coinListCoordinator.start()
         
+        // Stocks
         let stocksNav = UINavigationController()
         let stocksCoordinator = factory.makeStockCoordinator(navigationController: stocksNav)
-        
         addChild(stocksCoordinator)
         stocksCoordinator.start()
         
+        // Wallet
         let walletNav = UINavigationController()
-        let walletVC = UIViewController()
-        walletVC.view.backgroundColor = .systemGray6
-        walletNav.setViewControllers([walletVC], animated: false)
+        let walletCoordinator = factory.makeWalletCoordinator(navigationController: walletNav)
+        addChild(walletCoordinator)
+        walletCoordinator.start()
         
+        // Books
         let bookNav = UINavigationController()
         let bookVC = UIViewController()
         bookVC.view.backgroundColor = .systemGray6
