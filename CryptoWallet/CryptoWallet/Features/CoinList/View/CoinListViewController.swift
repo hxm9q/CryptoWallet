@@ -466,9 +466,7 @@ extension CoinListViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        guard let selectedCoin = coinListViewModel.coin(at: indexPath.row) else { return }
-        let coinDetailVC = CoinDetailViewController(coin: selectedCoin)
-        navigationController?.pushViewController(coinDetailVC, animated: true)
+        coinListViewModel.showCoinDetail(at: indexPath.row)
     }
 }
 

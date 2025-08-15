@@ -27,4 +27,10 @@ class CoinListCoordinator: Coordinator {
     func logout() {
         delegate?.coinListDidRequestLogout()
     }
+    
+    func showCoinDetail(coin: Coin) {
+        let coinDetailCoordinator = factory.makeCoinDetailCoordinator(navigationController: navigationController, coin: coin)
+        addChild(coinDetailCoordinator)
+        coinDetailCoordinator.start()
+    }
 }

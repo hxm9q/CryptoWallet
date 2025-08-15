@@ -69,4 +69,9 @@ final class CoinListViewModel {
     func logout() {
         coordinator?.logout()
     }
+    
+    func showCoinDetail(at index: Int) {
+        guard let coin = coin(at: index) else { return }
+        coordinator?.showCoinDetail(coin: coin)
+    }
 }

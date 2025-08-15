@@ -42,9 +42,14 @@ class CoinDetailViewController: UIViewController {
     private let navigationButton = UIButton()
     
     // MARK: - Init
-    init(coin: Coin) {
-        self.coinDetailViewModel = CoinDetailViewModel(coin: coin)
+    init(viewModel: CoinDetailViewModel) {
+        self.coinDetailViewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+    }
+    
+    convenience init(coin: Coin) {
+        let viewModel = CoinDetailViewModel(coin: coin)
+        self.init(viewModel: viewModel)
     }
     
     required init?(coder: NSCoder) {

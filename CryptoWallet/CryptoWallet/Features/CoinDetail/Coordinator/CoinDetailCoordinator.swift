@@ -1,8 +1,23 @@
-//
-//  CoinDetailCoordinator.swift
-//  CryptoWallet
-//
-//  Created by  Антон Шадрин on 11.08.2025.
-//
+import UIKit
 
-import Foundation
+class CoinDetailCoordinator: Coordinator {
+    var childCoordinators: [Coordinator] = []
+    var navigationController: UINavigationController
+    
+    private let factory: CoinDetailFactoryProtocol
+    private let coin: Coin
+    
+    init(navigationController: UINavigationController, factory: CoinDetailFactoryProtocol, coin: Coin) {
+        self.navigationController = navigationController
+        self.factory = factory
+        self.coin = coin
+    }
+    
+    func start() {
+        let viewModel = factory.makeCoinDetailViewModel(coin: coin)
+        viewModel.coordinator = self
+        
+        let viewController = factory.makeCoinDetailViewController(viewModel: viewModel)
+        navigationController.pushViewController(viewController, animated: true)
+    }
+}
