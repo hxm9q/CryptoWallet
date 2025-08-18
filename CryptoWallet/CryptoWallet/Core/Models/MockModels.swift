@@ -11,3 +11,15 @@ struct Wallet {
     let amount: Double
     let date: String
 }
+
+struct Article {
+    let title: String
+    let author: String
+    let readTime: String
+}
+
+struct Profile {
+    let name: String
+    let email: String
+    let settings: [String]
+}

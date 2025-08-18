@@ -45,29 +45,30 @@ class MainCoordinator: Coordinator {
         addChild(walletCoordinator)
         walletCoordinator.start()
         
-        // Books
-        let bookNav = UINavigationController()
-        let bookVC = UIViewController()
-        bookVC.view.backgroundColor = .systemGray6
-        bookNav.setViewControllers([bookVC], animated: false)
+        // Articles
+        let articleNav = UINavigationController()
+        let articleCoordinator = factory.makeArticleCoordinator(navigationController: articleNav)
+        addChild(articleCoordinator)
+        articleCoordinator.start()
         
-        let personNav = UINavigationController()
-        let personVC = UIViewController()
-        personVC.view.backgroundColor = .systemGray6
-        personNav.setViewControllers([personVC], animated: false)
+        // Profile
+        let profileNav = UINavigationController()
+        let profileCoordinator = factory.makeProfileCoordinator(navigationController: profileNav)
+        addChild(profileCoordinator)
+        profileCoordinator.start()
         
         coinListNav.tabBarItem = UITabBarItem(title: "", image: UIImage(named: "home_tab"), tag: 0)
         stocksNav.tabBarItem = UITabBarItem(title: "", image: UIImage(named: "stocks_tab"), tag: 1)
         walletNav.tabBarItem = UITabBarItem(title: "", image: UIImage(named: "wallet_tab"), tag: 2)
-        bookNav.tabBarItem = UITabBarItem(title: "", image: UIImage(named: "book_tab"), tag: 3)
-        personNav.tabBarItem = UITabBarItem(title: "", image: UIImage(named: "person_tab"), tag: 4)
+        articleNav.tabBarItem = UITabBarItem(title: "", image: UIImage(named: "book_tab"), tag: 3)
+        profileNav.tabBarItem = UITabBarItem(title: "", image: UIImage(named: "person_tab"), tag: 4)
         
         tabBarController.viewControllers = [
             coinListNav,
             stocksNav,
             walletNav,
-            bookNav,
-            personNav
+            articleNav,
+            profileNav
         ]
     }
 }

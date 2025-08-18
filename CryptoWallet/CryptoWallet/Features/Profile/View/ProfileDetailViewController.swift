@@ -1,11 +1,11 @@
 import UIKit
 
-class WalletDetailViewController: UIViewController {
+class ProfileDetailViewController: UIViewController {
     
-    private let viewModel: WalletDetailViewModel
+    private let viewModel: ProfileDetailViewModel
     
     // MARK: - Init
-    init(viewModel: WalletDetailViewModel) {
+    init(viewModel: ProfileDetailViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -23,26 +23,27 @@ class WalletDetailViewController: UIViewController {
     private func setupUI() {
         view.backgroundColor = .systemGray6
         
-        let titleLabel = UILabel()
-        titleLabel.text = viewModel.walletTitle
-        titleLabel.font = .systemFont(ofSize: 24, weight: .bold)
-        titleLabel.textAlignment = .center
+        let nameLabel = UILabel()
+        nameLabel.text = viewModel.profileName
+        nameLabel.font = .systemFont(ofSize: 24, weight: .bold)
+        nameLabel.textAlignment = .center
         
-        let amountLabel = UILabel()
-        amountLabel.text = "Amount: \(viewModel.amountInfo)"
-        amountLabel.font = .systemFont(ofSize: 18, weight: .medium)
-        amountLabel.textAlignment = .center
+        let emailLabel = UILabel()
+        emailLabel.text = viewModel.profileEmail
+        emailLabel.font = .systemFont(ofSize: 18, weight: .medium)
+        emailLabel.textAlignment = .center
         
-        let dateLabel = UILabel()
-        dateLabel.text = viewModel.dateInfo
-        dateLabel.font = .systemFont(ofSize: 18, weight: .medium)
-        dateLabel.textAlignment = .center
+        let settingsLabel = UILabel()
+        settingsLabel.text = viewModel.profileSettings
+        settingsLabel.numberOfLines = 0
+        settingsLabel.font = .systemFont(ofSize: 18, weight: .medium)
+        settingsLabel.textAlignment = .center
         
         let backButton = UIButton(type: .system)
-        backButton.setTitle("Back to Wallet", for: .normal)
+        backButton.setTitle("Back to Profile", for: .normal)
         backButton.addTarget(self, action: #selector(goBack), for: .touchUpInside)
         
-        let stackView = UIStackView(arrangedSubviews: [titleLabel, amountLabel, dateLabel, backButton])
+        let stackView = UIStackView(arrangedSubviews: [nameLabel, emailLabel, settingsLabel, backButton])
         stackView.axis = .vertical
         stackView.spacing = 20
         stackView.alignment = .center

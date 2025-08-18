@@ -1,11 +1,11 @@
 import UIKit
 
-class WalletDetailViewController: UIViewController {
+class ArticleDetailViewController: UIViewController {
     
-    private let viewModel: WalletDetailViewModel
+    private let viewModel: ArticleDetailViewModel
     
     // MARK: - Init
-    init(viewModel: WalletDetailViewModel) {
+    init(viewModel: ArticleDetailViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -14,7 +14,7 @@ class WalletDetailViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Lifecycle
+    // MARK: - LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -24,25 +24,25 @@ class WalletDetailViewController: UIViewController {
         view.backgroundColor = .systemGray6
         
         let titleLabel = UILabel()
-        titleLabel.text = viewModel.walletTitle
+        titleLabel.text = "Title: \(viewModel.articleTitle)"
         titleLabel.font = .systemFont(ofSize: 24, weight: .bold)
         titleLabel.textAlignment = .center
         
-        let amountLabel = UILabel()
-        amountLabel.text = "Amount: \(viewModel.amountInfo)"
-        amountLabel.font = .systemFont(ofSize: 18, weight: .medium)
-        amountLabel.textAlignment = .center
+        let authorLabel = UILabel()
+        authorLabel.text = "Author: \(viewModel.articleAuthor)"
+        authorLabel.font = .systemFont(ofSize: 18, weight: .medium)
+        authorLabel.textAlignment = .center
         
-        let dateLabel = UILabel()
-        dateLabel.text = viewModel.dateInfo
-        dateLabel.font = .systemFont(ofSize: 18, weight: .medium)
-        dateLabel.textAlignment = .center
+        let readTimeLabel = UILabel()
+        readTimeLabel.text = "Approximate time: \(viewModel.articleReadTime)"
+        readTimeLabel.font = .systemFont(ofSize: 18, weight: .medium)
+        readTimeLabel.textAlignment = .center
         
         let backButton = UIButton(type: .system)
-        backButton.setTitle("Back to Wallet", for: .normal)
+        backButton.setTitle("Back to Articles", for: .normal)
         backButton.addTarget(self, action: #selector(goBack), for: .touchUpInside)
         
-        let stackView = UIStackView(arrangedSubviews: [titleLabel, amountLabel, dateLabel, backButton])
+        let stackView = UIStackView(arrangedSubviews: [titleLabel, authorLabel, readTimeLabel, backButton])
         stackView.axis = .vertical
         stackView.spacing = 20
         stackView.alignment = .center
