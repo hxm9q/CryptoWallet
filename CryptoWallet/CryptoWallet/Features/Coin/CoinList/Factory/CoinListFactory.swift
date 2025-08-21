@@ -2,7 +2,7 @@ import UIKit
 
 protocol CoinListFactoryProtocol {
     func makeCoinListCoordinator(navigationController: UINavigationController) -> CoinListCoordinator
-    func makeCoinListViewController(viewModel: CoinListViewModel) -> CoinListViewController
+    func makeCoinListViewController(viewModel: CoinListViewModel) -> UIViewController
     func makeCoinListViewModel() -> CoinListViewModel
     func makeCoinDetailCoordinator(navigationController: UINavigationController, coin: Coin) -> CoinDetailCoordinator
 }
@@ -14,8 +14,8 @@ class CoinListFactory: CoinListFactoryProtocol {
         return CoinListCoordinator(navigationController: navigationController, factory: self)
     }
     
-    func makeCoinListViewController(viewModel: CoinListViewModel) -> CoinListViewController {
-        return CoinListViewController(coinListViewModel: viewModel)
+    func makeCoinListViewController(viewModel: CoinListViewModel) -> UIViewController {
+        return CoinListHostingController(viewModel: viewModel)
     }
     
     func makeCoinListViewModel() -> CoinListViewModel {
