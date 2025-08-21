@@ -1,16 +1,17 @@
 import Foundation
 
-final class CoinListViewModel {
+final class CoinListViewModel: ObservableObject {
     
     weak var coordinator: CoinListCoordinator?
-    
     private let coinRepository: CoinRepositoryProtocol
-    private(set) var coins: [Coin] = []
-    private(set) var isLoading: Bool = false
     
-    var onUpdate: (() -> Void)?
-    var onError: ((String) -> Void)?
-    var onLoadingStateChange: ((Bool) -> Void)?
+    @Published var coins: [Coin] = []
+    @Published var isLoading: Bool = false
+    @Published var showError: Bool = false
+    @Published var errorMessage: String? = nil
+    
+    @Published var showRefreshLogoutMenu: Bool = false
+    @Published var showSortMenu: Bool = false
     
     init(coinRepository: CoinRepositoryProtocol = CoinRepository()) {
         self.coinRepository = coinRepository
@@ -28,10 +29,9 @@ final class CoinListViewModel {
                 switch result {
                 case .success(let coins):
                     self.coins = coins
-                    self.onUpdate?()
                     
                 case .failure(let error):
-                    self.onError?(error.localizedDescription)
+                    self.showErrorAlert(error.localizedDescription)
                 }
             }
         }
@@ -48,22 +48,46 @@ final class CoinListViewModel {
     
     func clearCoins() {
         coins.removeAll()
-        onUpdate?()
+    }
+    
+    func refreshCoins() {
+        clearCoins()
+        fetchCoins()
+        hideAllMenus()
     }
     
     func sortAscendingByPrice() {
         coins.sort { $0.priceValue < $1.priceValue }
-        onUpdate?()
+        hideAllMenus()
     }
     
     func sortDescendingByPrice() {
         coins.sort { $0.priceValue > $1.priceValue }
-        onUpdate?()
+        hideAllMenus()
     }
     
     private func setLoadingState(_ loading: Bool) {
         isLoading = loading
-        onLoadingStateChange?(loading)
+    }
+    
+    private func showErrorAlert(_ message: String) {
+        errorMessage = message
+        showError = true
+    }
+    
+    func toggleRefreshLogoutMenu() {
+        showSortMenu = false
+        showRefreshLogoutMenu.toggle()
+    }
+    
+    func toggleSortMenu() {
+        showRefreshLogoutMenu = false
+        showSortMenu.toggle()
+    }
+    
+    func hideAllMenus() {
+        showRefreshLogoutMenu = false
+        showSortMenu = false
     }
     
     func logout() {
