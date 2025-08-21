@@ -4,6 +4,7 @@ import SwiftUI
 class AuthHostingController: UIHostingController<AuthView> {
     private let viewModel: AuthViewModel
     
+    // MARK: - LifeCycle
     init(viewModel: AuthViewModel) {
         self.viewModel = viewModel
         let authView = AuthView(viewModel: AuthViewModel())
@@ -13,4 +14,24 @@ class AuthHostingController: UIHostingController<AuthView> {
     @MainActor required dynamic init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    // MARK: - Init
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .clear
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
 }
+
+//// MARK: - Controller Setup
+//private extension AuthHostingController {
+//    
+//    func setupHostingController() {
+//        view.backgroundColor = .clear
+//        
+//    }
+//}

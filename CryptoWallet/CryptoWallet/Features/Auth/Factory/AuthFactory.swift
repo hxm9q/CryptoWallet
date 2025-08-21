@@ -2,7 +2,7 @@ import UIKit
 
 protocol AuthFactoryProtocol {
     func makeAuthCoordinator(navigationController: UINavigationController) -> AuthCoordinator
-    func makeAuthViewController(viewModel: AuthViewModel) -> AuthViewController
+    func makeAuthViewController(viewModel: AuthViewModel) -> UIViewController
     func makeAuthViewModel() -> AuthViewModel
 }
 
@@ -11,8 +11,8 @@ class AuthFactory: AuthFactoryProtocol {
         return AuthCoordinator(navigationController: navigationController, factory: self)
     }
     
-    func makeAuthViewController(viewModel: AuthViewModel) -> AuthViewController {
-        return AuthViewController(viewModel: viewModel)
+    func makeAuthViewController(viewModel: AuthViewModel) -> UIViewController {
+        return AuthHostingController(viewModel: viewModel)
     }
     
     func makeAuthViewModel() -> AuthViewModel {
