@@ -10,7 +10,7 @@ class MainCoordinator: Coordinator {
     
     weak var delegate: MainCoordinatorDelegate?
     private let factory: MainFactoryProtocol
-    private var tabBarController: MainTabBarController?
+    var tabBarController: MainTabBarController?
     
     init(navigationController: UINavigationController, factory: MainFactoryProtocol) {
         self.navigationController = navigationController
@@ -20,9 +20,7 @@ class MainCoordinator: Coordinator {
     func start() {
         let tabBarController = factory.makeMainTabBarController()
         setupTabBarCoordinators(tabBarController: tabBarController)
-        
         self.tabBarController = tabBarController
-        navigationController.setViewControllers([tabBarController], animated: false)
     }
     
     private func setupTabBarCoordinators(tabBarController: MainTabBarController) {

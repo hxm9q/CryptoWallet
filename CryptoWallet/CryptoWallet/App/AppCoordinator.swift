@@ -11,11 +11,10 @@ class AppCoordinator: Coordinator {
         self.window = window
         self.factory = factory
         self.navigationController = UINavigationController()
-        setupWindow()
     }
     
-    private func setupWindow() {
-        window?.rootViewController = navigationController
+    private func setupWindow(rootViewController: UIViewController) {
+        window?.rootViewController = rootViewController
         window?.makeKeyAndVisible()
     }
     
@@ -40,6 +39,10 @@ class AppCoordinator: Coordinator {
         mainCoordinator.delegate = self
         addChild(mainCoordinator)
         mainCoordinator.start()
+        
+        if let tabBarController = mainCoordinator.tabBarController {
+            setupWindow(rootViewController: tabBarController)
+        }
     }
     
     private func showAuthFlow() {
@@ -47,6 +50,8 @@ class AppCoordinator: Coordinator {
         authCoordinator.delegate = self
         addChild(authCoordinator)
         authCoordinator.start()
+        
+        setupWindow(rootViewController: navigationController)
     }
 }
 
