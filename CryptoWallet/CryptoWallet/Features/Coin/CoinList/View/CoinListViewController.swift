@@ -56,7 +56,7 @@
 //    }
 //}
 //
-//// MARK: - Setup UI
+// MARK: - Setup UI
 //private extension CoinListViewController {
 //    
 //    func setupUI() {
@@ -116,7 +116,7 @@
 //    }
 //}
 //
-//// MARK: - Setup Layout
+// MARK: - Setup Layout
 //private extension CoinListViewController {
 //    
 //    func setupLayout() {
@@ -169,7 +169,7 @@
 //    }
 //}
 //
-//// MARK: - Setup Table Header & Footer View
+// MARK: - Setup Table Header & Footer View
 //private extension CoinListViewController {
 //    
 //    func setupTableView() {
@@ -207,7 +207,7 @@
 //    }
 //}
 //
-//// MARK: - ViewModel Binding
+// MARK: - ViewModel Binding
 //private extension CoinListViewController {
 //    
 //    func bindViewModel() {
@@ -245,7 +245,7 @@
 //    }
 //}
 //
-//// MARK: - Menu Handling
+// MARK: - Menu Handling
 //private extension CoinListViewController {
 //    
 //    func enableTapToCloseMenu() {
@@ -284,7 +284,7 @@
 //    }
 //}
 //
-//// MARK: - Refresh & Logout Pop Up Menu
+// MARK: - Refresh & Logout Pop Up Menu
 //private extension CoinListViewController {
 //    
 //    @objc func refreshLogoutButtonTapped() {
@@ -363,7 +363,7 @@
 //    }
 //}
 //
-//// MARK: - Sort Pop Up Menu
+// MARK: - Sort Pop Up Menu
 //private extension CoinListViewController {
 //    
 //    @objc func sortButtonTapped() {
@@ -446,7 +446,7 @@
 //    }
 //}
 //
-//// MARK: - TableViewDatasource & TableViewDelegate
+// MARK: - TableViewDatasource & TableViewDelegate
 //extension CoinListViewController: UITableViewDataSource, UITableViewDelegate {
 //    
 //    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -470,7 +470,7 @@
 //    }
 //}
 //
-//// MARK: - UIGestureRecognizerDelegate
+// MARK: - UIGestureRecognizerDelegate
 //extension CoinListViewController: UIGestureRecognizerDelegate {
 //    
 //    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
@@ -484,7 +484,7 @@
 //    }
 //}
 //
-//// MARK: - Preview
+// MARK: - Preview
 //#Preview {
 //    MainTabBarController()
 //}
