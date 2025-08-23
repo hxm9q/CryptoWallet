@@ -2,7 +2,7 @@ import UIKit
 
 class ArticleDetailViewController: UIViewController {
     
-    private let viewModel: ArticleDetailViewModel
+    let viewModel: ArticleDetailViewModel
     
     // MARK: - Init
     init(viewModel: ArticleDetailViewModel) {

@@ -4,7 +4,7 @@ import SnapKit
 
 class AuthViewController: UIViewController {
     
-    private let viewModel: AuthViewModel
+    let viewModel: AuthViewModel
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Init

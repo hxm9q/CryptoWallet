@@ -4,26 +4,26 @@ class WalletCoordinator: Coordinator {
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController
     
-    private let factory: WalletFactoryProtocol
+    private let builder: ViewControllerBuilderProtocol
     
-    init(navigationController: UINavigationController, factory: WalletFactoryProtocol) {
+    init(navigationController: UINavigationController, builder: ViewControllerBuilderProtocol) {
         self.navigationController = navigationController
-        self.factory = factory
+        self.builder = builder
     }
     
     func start() {
-        let viewModel = factory.makeWalletViewModel(title: "Wallet")
-        viewModel.coordinator = self
-        
-        let viewController = factory.makeWalletViewController(viewModel: viewModel)
+        showWallet()
+    }
+    
+    func showWallet(title: String = "Wallet") {
+        let viewController = builder.buildWalletViewController(title: title)
+        viewController.viewModel.coordinator = self
         navigationController.setViewControllers([viewController], animated: false)
     }
     
     func showWalletDetail(wallet: Wallet) {
-        let viewModel = factory.makeWalletDetailViewModel(wallet: wallet)
-        viewModel.coordinator = self
-        
-        let viewController = factory.makeWalletDetailViewController(viewModel: viewModel)
+        let viewController = builder.buildWalletDetailViewController(wallet: wallet)
+        viewController.viewModel.coordinator = self
         navigationController.pushViewController(viewController, animated: true)
     }
     

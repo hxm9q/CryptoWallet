@@ -10,11 +10,11 @@ class AuthCoordinator: Coordinator {
     var navigationController: UINavigationController
     
     weak var delegate: AuthCoordinatorDelegate?
-    private let factory: AuthFactoryProtocol
+    private let builder: ViewControllerBuilderProtocol
     
-    init(navigationController: UINavigationController, factory: AuthFactoryProtocol) {
+    init(navigationController: UINavigationController, builder: ViewControllerBuilderProtocol) {
         self.navigationController = navigationController
-        self.factory = factory
+        self.builder = builder
         setupLogoutObserver()
     }
     
@@ -23,10 +23,12 @@ class AuthCoordinator: Coordinator {
     }
     
     func start() {
-        let viewModel = factory.makeAuthViewModel()
-        viewModel.coordinator = self
-        
-        let viewController = factory.makeAuthViewController(viewModel: viewModel)
+        showAuth()
+    }
+    
+    func showAuth() {
+        let viewController = builder.buildAuthViewController()
+        viewController.viewModel.coordinator = self
         navigationController.setViewControllers([viewController], animated: false)
     }
     

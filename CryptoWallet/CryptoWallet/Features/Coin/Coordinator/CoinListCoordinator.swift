@@ -1,9 +1,14 @@
 import UIKit
 
-class ArticleCoordinator: Coordinator {
+protocol CoinListCoordinatorDelegate: AnyObject {
+    func coinListDidRequestLogout()
+}
+
+class CoinListCoordinator: Coordinator {
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController
     
+    weak var delegate: CoinListCoordinatorDelegate?
     private let builder: ViewControllerBuilderProtocol
     
     init(navigationController: UINavigationController, builder: ViewControllerBuilderProtocol) {
@@ -12,22 +17,26 @@ class ArticleCoordinator: Coordinator {
     }
     
     func start() {
-        showArticle()
+        showCoinList()
     }
     
-    func showArticle(title: String = "Articles") {
-        let viewController = builder.buildArticleViewController(title: title)
+    func showCoinList() {
+        let viewController = builder.buildCoinListViewController()
         viewController.viewModel.coordinator = self
         navigationController.setViewControllers([viewController], animated: false)
     }
     
-    func showArticleDetail(article: Article) {
-        let detailViewController = builder.buildArticleDetailViewController(article: article)
+    func showCoinDetail(coin: Coin) {
+        let detailViewController = builder.buildCoinDetailViewController(coin: coin)
         detailViewController.viewModel.coordinator = self
         navigationController.pushViewController(detailViewController, animated: true)
     }
     
-    func goBackFromArticleDetail() {
+    func goBackFromCoinDetail() {
         navigationController.popViewController(animated: true)
+    }
+    
+    func logout() {
+        delegate?.coinListDidRequestLogout()
     }
 }

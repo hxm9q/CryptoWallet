@@ -4,26 +4,26 @@ class ProfileCoordinator: Coordinator {
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController
     
-    private let factory: ProfileFactoryProtocol
+    private let builder: ViewControllerBuilderProtocol
     
-    init(navigationController: UINavigationController, factory: ProfileFactoryProtocol) {
+    init(navigationController: UINavigationController, builder: ViewControllerBuilderProtocol) {
         self.navigationController = navigationController
-        self.factory = factory
+        self.builder = builder
     }
     
     func start() {
-        let viewModel = factory.makeProfileViewModel(title: "Profile")
-        viewModel.coordinator = self
-        
-        let viewController = factory.makeProfileViewController(viewModel: viewModel)
+        showProfile()
+    }
+    
+    func showProfile(title: String = "Profile") {
+        let viewController = builder.buildProfileViewController(title: title)
+        viewController.viewModel.coordinator = self
         navigationController.setViewControllers([viewController], animated: false)
     }
     
     func showProfileDetail(profile: Profile) {
-        let viewModel = factory.makeProfileDetailViewModel(profile: profile)
-        viewModel.coordinator = self
-        
-        let viewController = factory.makeProfileDetailViewController(viewModel: viewModel)
+        let viewController = builder.buildProfileDetailViewController(profile: profile)
+        viewController.viewModel.coordinator = self
         navigationController.pushViewController(viewController, animated: true)
     }
     

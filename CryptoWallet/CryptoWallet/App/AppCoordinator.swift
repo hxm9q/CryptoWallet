@@ -5,11 +5,11 @@ class AppCoordinator: Coordinator {
     var navigationController: UINavigationController
     
     private var window: UIWindow?
-    private let factory: AppFactoryProtocol
+    private let builder: ViewControllerBuilderProtocol
     
-    init(window: UIWindow?, factory: AppFactoryProtocol) {
+    init(window: UIWindow?, builder: ViewControllerBuilderProtocol) {
         self.window = window
-        self.factory = factory
+        self.builder = builder
         self.navigationController = UINavigationController()
     }
     
@@ -35,7 +35,7 @@ class AppCoordinator: Coordinator {
     private func showMainFlow() {
         childCoordinators.removeAll { $0 is AuthCoordinator }
         
-        let mainCoordinator = factory.mainFactory.makeMainCoordinator(navigationController: navigationController)
+        let mainCoordinator = builder.buildMainCoordinator(navigationController: navigationController)
         mainCoordinator.delegate = self
         addChild(mainCoordinator)
         mainCoordinator.start()
@@ -46,7 +46,7 @@ class AppCoordinator: Coordinator {
     }
     
     private func showAuthFlow() {
-        let authCoordinator = factory.authFactory.makeAuthCoordinator(navigationController: navigationController)
+        let authCoordinator = builder.buildAuthCoordinator(navigationController: navigationController)
         authCoordinator.delegate = self
         addChild(authCoordinator)
         authCoordinator.start()

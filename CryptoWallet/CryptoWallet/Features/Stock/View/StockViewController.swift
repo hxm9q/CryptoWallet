@@ -2,7 +2,7 @@ import UIKit
 
 class StockViewController: UIViewController {
     
-    private let viewModel: StockViewModel
+    let viewModel: StockViewModel
     
     // MARK: - Init
     init(viewModel: StockViewModel) {

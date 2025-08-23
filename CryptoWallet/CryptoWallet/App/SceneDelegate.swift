@@ -16,8 +16,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         let window = UIWindow(windowScene: windowScene)
-        let appFactory: AppFactoryProtocol = AppFactory()
-        let appCoordinator = appFactory.makeAppCoordinator(window: window)
+        let builder = ViewControllerBuilder()
+        let appCoordinator = AppCoordinator(window: window, builder: builder)
         
         self.window = window
         self.appCoordinator = appCoordinator

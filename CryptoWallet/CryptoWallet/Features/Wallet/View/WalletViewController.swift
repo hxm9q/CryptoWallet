@@ -2,7 +2,7 @@ import UIKit
 
 class WalletViewController: UIViewController {
     
-    private let viewModel: WalletViewModel
+    let viewModel: WalletViewModel
     
     // MARK: - Init
     init(viewModel: WalletViewModel) {

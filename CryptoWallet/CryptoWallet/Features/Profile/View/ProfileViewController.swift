@@ -2,7 +2,7 @@ import UIKit
 
 class ProfileViewController: UIViewController {
     
-    private let viewModel: ProfileViewModel
+    let viewModel: ProfileViewModel
     
     // MARK: - Init
     init(viewModel: ProfileViewModel) {

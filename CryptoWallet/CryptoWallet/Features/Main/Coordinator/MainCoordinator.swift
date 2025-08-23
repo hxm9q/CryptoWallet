@@ -9,16 +9,16 @@ class MainCoordinator: Coordinator {
     var navigationController: UINavigationController
     
     weak var delegate: MainCoordinatorDelegate?
-    private let factory: MainFactoryProtocol
+    private let builder: ViewControllerBuilderProtocol
     var tabBarController: MainTabBarController?
     
-    init(navigationController: UINavigationController, factory: MainFactoryProtocol) {
+    init(navigationController: UINavigationController, builder: ViewControllerBuilderProtocol) {
         self.navigationController = navigationController
-        self.factory = factory
+        self.builder = builder
     }
     
     func start() {
-        let tabBarController = factory.makeMainTabBarController()
+        let tabBarController = builder.buildMainTabBarController()
         setupTabBarCoordinators(tabBarController: tabBarController)
         self.tabBarController = tabBarController
     }
@@ -26,32 +26,32 @@ class MainCoordinator: Coordinator {
     private func setupTabBarCoordinators(tabBarController: MainTabBarController) {
         // Coin List
         let coinListNav = UINavigationController()
-        let coinListCoordinator = factory.makeCoinListCoordinator(navigationController: coinListNav)
+        let coinListCoordinator = builder.buildCoinListCoordinator(navigationController: coinListNav)
         coinListCoordinator.delegate = self
         addChild(coinListCoordinator)
         coinListCoordinator.start()
         
         // Stocks
         let stocksNav = UINavigationController()
-        let stocksCoordinator = factory.makeStockCoordinator(navigationController: stocksNav)
+        let stocksCoordinator = builder.buildStockCoordinator(navigationController: stocksNav)
         addChild(stocksCoordinator)
         stocksCoordinator.start()
         
         // Wallet
         let walletNav = UINavigationController()
-        let walletCoordinator = factory.makeWalletCoordinator(navigationController: walletNav)
+        let walletCoordinator = builder.buildWalletCoordinator(navigationController: walletNav)
         addChild(walletCoordinator)
         walletCoordinator.start()
         
         // Articles
         let articleNav = UINavigationController()
-        let articleCoordinator = factory.makeArticleCoordinator(navigationController: articleNav)
+        let articleCoordinator = builder.buildArticleCoordinator(navigationController: articleNav)
         addChild(articleCoordinator)
         articleCoordinator.start()
         
         // Profile
         let profileNav = UINavigationController()
-        let profileCoordinator = factory.makeProfileCoordinator(navigationController: profileNav)
+        let profileCoordinator = builder.buildProfileCoordinator(navigationController: profileNav)
         addChild(profileCoordinator)
         profileCoordinator.start()
         

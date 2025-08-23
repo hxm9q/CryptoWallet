@@ -3,7 +3,7 @@ import UIKit
 
 final class CoinDetailViewModel {
     
-    weak var coordinator: CoinDetailCoordinator?
+    weak var coordinator: CoinListCoordinator?
     
     private let coin: Coin
     private let timeFilterSections = ["24H", "1W", "1Y", "ALL", "Point"]

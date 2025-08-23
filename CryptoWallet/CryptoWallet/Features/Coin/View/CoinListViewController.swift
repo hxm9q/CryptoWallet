@@ -4,10 +4,10 @@ import SnapKit
 class CoinListViewController: UIViewController {
     
     // MARK: - ViewModel
-    private let coinListViewModel: CoinListViewModel
+    let viewModel: CoinListViewModel
     
-    init(coinListViewModel: CoinListViewModel) {
-        self.coinListViewModel = coinListViewModel
+    init(viewModel: CoinListViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -47,7 +47,7 @@ class CoinListViewController: UIViewController {
         setupLayout()
         setupTableView()
         bindViewModel()
-        coinListViewModel.fetchCoins()
+        viewModel.fetchCoins()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -211,19 +211,19 @@ private extension CoinListViewController {
 private extension CoinListViewController {
     
     func bindViewModel() {
-        coinListViewModel.onUpdate = { [weak self] in
+        viewModel.onUpdate = { [weak self] in
             DispatchQueue.main.async {
                 self?.tableView.reloadData()
             }
         }
         
-        coinListViewModel.onError = { [weak self] error in
+        viewModel.onError = { [weak self] error in
             DispatchQueue.main.async {
                 self?.showErrorAlert(message: error)
             }
         }
         
-        coinListViewModel.onLoadingStateChange = { [weak self] isLoading in
+        viewModel.onLoadingStateChange = { [weak self] isLoading in
             DispatchQueue.main.async {
                 if isLoading {
                     self?.activityIndicator.startAnimating()
@@ -349,16 +349,16 @@ private extension CoinListViewController {
     @objc func refreshButtonTapped() {
         tableView.tableFooterView = footerView
         
-        coinListViewModel.clearCoins()
+        viewModel.clearCoins()
         tableView.reloadData()
         activityIndicator.startAnimating()
-        coinListViewModel.fetchCoins()
+        viewModel.fetchCoins()
         
         hideMenus()
     }
     
     @objc func logoutButtonTapped() {
-        coinListViewModel.logout()
+        viewModel.logout()
         hideMenus()
     }
 }
@@ -425,7 +425,7 @@ private extension CoinListViewController {
             duration: 0.3,
             options: .transitionCrossDissolve,
             animations: {
-                self.coinListViewModel.sortAscendingByPrice()
+                self.viewModel.sortAscendingByPrice()
                 self.tableView.reloadData()
             }
         )
@@ -438,7 +438,7 @@ private extension CoinListViewController {
             duration: 0.3,
             options: .transitionCrossDissolve,
             animations: {
-                self.coinListViewModel.sortDescendingByPrice()
+                self.viewModel.sortDescendingByPrice()
                 self.tableView.reloadData()
             }
         )
@@ -450,13 +450,13 @@ private extension CoinListViewController {
 extension CoinListViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return coinListViewModel.numberOfCoins()
+        return viewModel.numberOfCoins()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard
             let cell = tableView.dequeueReusableCell(withIdentifier: "CoinCell", for: indexPath) as? CoinCell,
-            let coin = coinListViewModel.coin(at: indexPath.row)
+            let coin = viewModel.coin(at: indexPath.row)
         else {
             return UITableViewCell()
         }
@@ -466,7 +466,7 @@ extension CoinListViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        coinListViewModel.showCoinDetail(at: indexPath.row)
+        viewModel.showCoinDetail(at: indexPath.row)
     }
 }
 

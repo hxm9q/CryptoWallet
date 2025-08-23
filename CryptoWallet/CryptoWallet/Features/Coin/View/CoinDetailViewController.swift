@@ -22,7 +22,7 @@ class CoinDetailViewController: UIViewController {
     ]
     
     // MARK: - ViewModel
-    private let coinDetailViewModel: CoinDetailViewModel
+    let viewModel: CoinDetailViewModel
     
     // MARK: - Constants
     private enum CoinDetailConstants {
@@ -43,7 +43,7 @@ class CoinDetailViewController: UIViewController {
     
     // MARK: - Init
     init(viewModel: CoinDetailViewModel) {
-        self.coinDetailViewModel = viewModel
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -78,10 +78,10 @@ private extension CoinDetailViewController {
     
     func setupUI() {
         // MARK: Labels
-        nameLabel.text = coinDetailViewModel.displayName
+        nameLabel.text = viewModel.displayName
         nameLabel.font = .systemFont(ofSize: 14, weight: .semibold)
         
-        priceLabel.text = coinDetailViewModel.displayPrice
+        priceLabel.text = viewModel.displayPrice
         priceLabel.font = .systemFont(ofSize: 28, weight: .semibold)
         
         changeLabel.text = ""
@@ -93,7 +93,7 @@ private extension CoinDetailViewController {
         
         // MARK: Segmented Control
         segmentedControl.removeAllSegments()
-        for (index, title) in coinDetailViewModel.timeFilters.enumerated() {
+        for (index, title) in viewModel.timeFilters.enumerated() {
             segmentedControl.insertSegment(withTitle: title, at: index, animated: false)
         }
         segmentedControl.selectedSegmentIndex = 0
@@ -112,13 +112,13 @@ private extension CoinDetailViewController {
     }
     
     @objc func segmentedControlChanged(_ sender: UISegmentedControl) {
-        coinDetailViewModel.updateSelectedIndex(sender.selectedSegmentIndex)
+        viewModel.updateSelectedIndex(sender.selectedSegmentIndex)
         updateChangeDisplay()
         tableView.reloadData()
     }
     
     func updateChangeDisplay() {
-        if let changeValue = coinDetailViewModel.selectedChangeValue() {
+        if let changeValue = viewModel.selectedChangeValue() {
             let formatter = NumberFormatter()
             formatter.minimumFractionDigits = 0
             formatter.maximumFractionDigits = 2
@@ -129,7 +129,7 @@ private extension CoinDetailViewController {
             changeLabel.textColor = .lightGray
             changeLabel.font = .systemFont(ofSize: 14, weight: .medium)
             
-            let imageName = coinDetailViewModel.arrowImageName
+            let imageName = viewModel.arrowImageName
             changeImageView.image = UIImage(named: imageName)
             changeImageView.isHidden = false
         } else {
@@ -208,7 +208,7 @@ private extension CoinDetailViewController {
     }
     
     @objc func backButtonTapped() {
-        coinDetailViewModel.goBack()
+        viewModel.goBack()
     }
 }
 
@@ -216,7 +216,7 @@ private extension CoinDetailViewController {
 extension CoinDetailViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return coinDetailViewModel.numberOfRows()
+        return viewModel.numberOfRows()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -225,9 +225,9 @@ extension CoinDetailViewController: UITableViewDataSource, UITableViewDelegate {
         else {
             return UITableViewCell()
         }
-        let coin = coinDetailViewModel.coinData()
+        let coin = viewModel.coinData()
         cell.configure(with: coin)
-        cell.configureSupply(with: coin, value: coinDetailViewModel.selectedSupplyValue())
+        cell.configureSupply(with: coin, value: viewModel.selectedSupplyValue())
         return cell
     }
 }

@@ -4,26 +4,26 @@ class StockCoordinator: Coordinator {
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController
     
-    private let factory: StockFactoryProtocol
+    private let builder: ViewControllerBuilderProtocol
     
-    init(navigationController: UINavigationController, factory: StockFactoryProtocol) {
+    init(navigationController: UINavigationController, builder: ViewControllerBuilderProtocol) {
         self.navigationController = navigationController
-        self.factory = factory
+        self.builder = builder
     }
     
     func start() {
-        let viewModel = factory.makeStockViewModel(title: "Stocks")
-        viewModel.coordinator = self
-        
-        let viewController = factory.makeStockViewController(viewModel: viewModel)
+        showStock()
+    }
+    
+    func showStock(title: String = "Stocks") {
+        let viewController = builder.buildStockViewController(title: title)
+        viewController.viewModel.coordinator = self
         navigationController.setViewControllers([viewController], animated: false)
     }
     
     func showStockDetail(stock: Stock) {
-        let viewModel = factory.makeStockDetailViewModel(stock: stock)
-        viewModel.coordinator = self
-        
-        let viewController = factory.makeStockDetailViewController(viewModel: viewModel)
+        let viewController = builder.buildStockDetailViewController(stock: stock)
+        viewController.viewModel.coordinator = self
         navigationController.pushViewController(viewController, animated: true)
     }
     
